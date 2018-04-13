@@ -1,0 +1,34 @@
+curl -XPUT 'localhost:9200/images?pretty' -H 'Content-Type: application/json' -d'
+{
+  "mappings": {
+    "googleVision": {
+      "dynamic_templates": [
+        {
+          "colors_field_as_nested": {
+            "match":   "colors",
+            "mapping": {
+              "type": "nested"
+            }
+          }
+        },
+        {
+          "color_field_as_nested": {
+            "match": "color",
+            "mapping": {
+              "type": "nested"
+            }
+          }
+        },
+        {
+          "labelAnnotations_field_as_nested": {
+            "match": "labelAnnotations",
+            "mapping": {
+              "type": "nested"
+            }
+          }
+        }
+      ]
+    }
+  }
+}
+'

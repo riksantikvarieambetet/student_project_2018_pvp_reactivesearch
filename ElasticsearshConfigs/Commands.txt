@@ -1,0 +1,91 @@
+//-----------------ElasticSearch------------------------------------------//
+--Starta server:
+install folder --> elasticsarch.exe
+
+--Serverstatus:
+curl 'localhost:9200/_cat/health?v'
+
+--Lista alla noder på servern:
+curl 'localhost:9200/_cat/indices?v'
+
+--Lägg till index(Collection) i databasen:
+curl -XPUT 'localhost:9200/-what you want-?pretty'
+
+--Ta bort index(Collection) från databas:
+curl -XDELETE 'localhost:9200/-what you want-?pretty'
+
+--Posta objekt i databas:
+curl -XPOST 'localhost:9200/--Index--/1?pretty' -H 'Content-Type: application/json' -d '{"key": "value"}'
+
+--Hämta object från databas:
+curl -XGET 'localhost:9200/customer/external/1?pretty'
+
+--Specificerar vi inte ett ID används POST istället för PUT
+
+--Kör inmatning från fil(lägg filen i 'bin'):
+curl -XPOST 'localhost:9200/bank/account/_bulk?pretty' --data-binary "@accounts.json" -H 'Content-Type: application/json'
+
+--hitta alla object i collection:
+$ curl -XPOST 'localhost:9200/bank/_search?pretty' -d '
+{
+  "query": { "match_all": {} }
+}' -H 'Content-Type: application/json'
+
+--Hitta alla objekt baserat på adress(mill or lane):
+curl -XPOST 'localhost:9200/bank/_search?pretty' -d '
+{
+  "query": { "match": { "address": "mill lane" } }
+}' -H 'Content-Type: application/json'
+
+--Hitta alla objekt baserat på sammanslagen fras("mill lane"):
+curl -XPOST 'localhost:9200/bank/_search?pretty' -d '
+{
+  "query": { "match_phrase": { "address": "mill lane" } }
+}' -H 'Content-Type: application/json'
+
+--Boolsk sökning:
+curl -XPOST 'localhost:9200/bank/_search?pretty' -d '
+{
+  "query": {
+    "bool": {
+      "must": [
+        { "match": { "age": "40" } }
+      ],
+      "must_not": [
+        { "match": { "state": "ID" } }
+      ]
+    }
+  }
+}' -H 'Content-Type: application/json'
+
+--Här används filter för att slippa beräkna relevans av objekt:
+curl -XPOST 'localhost:9200/bank/_search?pretty' -d '
+{
+  "query": {
+    "bool": {
+      "must": { "match_all": {} },
+      "filter": {
+        "range": {
+          "balance": {
+            "gte": 20000,
+            "lte": 30000
+          }
+        }
+      }
+    }
+  }
+}' -H 'Content-Type: application/json'
+
+//-----------------K-Samsök------------------------------------------//
+
+www.kulturarvsdata.se/ksamsok/api?method=search&stylesheet=stylesheet/searchStyle.xsl&query=item=yxa&place=gotland&startRecord=10&hitsPerPage=25&recordSchema=presentation&x-api=test
+
+// samma som ovan fast lättare att läsa!
+www.kulturarvsdata.se/ksamsok/api?method=search
+&stylesheet=stylesheet/searchStyle.xsl
+&query=item=yxa
+&place=gotland
+&startRecord=10
+&hitsPerPage=25
+&recordSchema=presentation
+&x-api=test
