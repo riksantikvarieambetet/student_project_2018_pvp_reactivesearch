@@ -1,10 +1,97 @@
 import './App.css';
 import React, { Component } from 'react';
-import { ReactiveBase, SingleList, CategorySearch, SingleRange, ResultCard, RangeSlider } from '@appbaseio/reactivesearch';
+import LabelAnnotationList from './components/LabelAnnotationList'
+import {
+  ReactiveBase,
+  SingleList,
+  CategorySearch,
+  SingleRange,
+  ResultCard,
+  RangeSlider,
+  TextField,
+  SelectedFilters,
+  DataSearch,
+  MultiList,
+  ReactiveComponent
+} from '@appbaseio/reactivesearch';
+
+
+/* {
+  "query": {
+    "match_phrase_prefix": {
+      "description": {
+        "query": value,
+          "slop": 10,
+            "max_expansions": 50
+      }
+    }
+  }
+} */
 
 class App extends Component {
 
+  textFieldQuery = (value, props) => {
+    return (
+      {
+        "query": {
+          "multi_match": {
+            "fields": ["description", "tag"],
+            "query": value,
+            "type": "phrase_prefix"
+          }
+        }
+      }
+    );
+  }
+
+  MultiListQuery = (value, props) => {
+    return (
+      {
+        "query": {
+          "nested": {
+            "path": "googleVision.responses.labelAnnotations",
+            "score_mode": "avg",
+            "query": {
+              "bool": {
+                "must": [
+                  { "match": { "googleVision.responses.labelAnnotations.description": "street" } },
+                  { "range": { "googleVision.responses.labelAnnotations.score": { "lt": 55 } } }
+                ]
+              }
+            }
+          }
+        }
+      }
+    )
+  }
+
+  MultiListQuery2 = (value, props) => {
+    return (
+      {
+        "size": 0,
+        "aggs": {
+          "labels": {
+            "nested": {
+              "path": "googleVision.responses.labelAnnotations"
+            },
+            "aggs": {
+              "labels": {
+                "terms": {
+                  "field": "googleVision.responses.labelAnnotations.description.keyword",
+                  "order": { "_count": "desc" },
+                  "size": 100000
+                }
+              }
+            }
+          }
+        }
+      }
+    )
+  }
+
+
   render() {
+    // googleVision.responses.labelAnnotations
     return (
       <ReactiveBase
         app="images"
@@ -12,63 +99,41 @@ class App extends Component {
 
         <div style={{ display: "flex", flexDirection: "row" }}>
 
-          <div style={{ display: "flex", flexDirection: "column", width: "40%" }}>
+          <div style={{ display: "flex", flexDirection: "column", width: "20%" }}>
 
-            <CategorySearch
-              componentId="searchbox"
-              dataField="googleVision.responses.labelAnnotations.description"
-              categoryField="googleVision.responses.labelAnnotations.keyword"
-              placeholder="Search for description"
-              style={{
-                padding: "5px",
-                marginTop: "10px"
-              }}
+            <TextField
+              componentId="textSearch"
+              style={{ "padding": "10px" }}
+              dataField=""
+              showFilter={true}
+              URLParams={true}
+              customQuery={this.textFieldQuery}
             />
-
-            <RangeSlider
-              componentId="scoreSlider"
-              dataField="googleVision.responses.labelAnnotations.score"
-              title="Label confidence"
-              range={{
-                "start": 0.0,
-                "end": 1.0
-              }}
-              defaultSelected={{
-                "start": 0.0,
-                "end": 1.0
-              }}
-              rangeLabels={{
-                "start": "Start",
-                "end": "End"
-              }}
-              stepValue={1}
-              showHistogram={true}
-              interval={0.1}
+            <ReactiveComponent
+              componentId="LabelAnnotation"
+              defaultQuery={this.MultiListQuery2}
               react={{
-                and: ["searchbox", "scorefilter"]
+                and: ["textSearch"]
               }}
-              URLParams={false}
-              style={{
-                padding: "5px",
-                marginTop: "10px"
-              }}
-            />
+            >
+              <LabelAnnotationList
+                componentId="LabelAnnotationList"
+              />
+            </ReactiveComponent>
           </div>
-
           <ResultCard
             componentId="results"
-            dataField="googleVision.responses.labelAnnotations.description"
+            dataField="description"
             size={20}
             pagination={true}
             react={{
-              and: ["searchbox", "scorefilter", "scoreSlider"]
+              and: ["textSearch", "LabelAnnotation"]
             }}
             onData={(res) => {
-              console.log(res);
               return {
                 image: res.image.src[0].content,
                 title: res.description,
-                description: res.brand + " " + "*".repeat(res.rating)
+                description: res.tag
               }
             }}
             style={{

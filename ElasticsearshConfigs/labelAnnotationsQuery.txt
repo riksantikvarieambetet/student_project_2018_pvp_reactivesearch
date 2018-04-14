@@ -16,3 +16,150 @@ curl -XGET 'localhost:9200/_search?pretty' -H 'Content-Type: application/json' -
     }
 }
 '
+
+curl -XGET 'localhost:9200/_search?pretty' -H 'Content-Type: application/json' -d'
+{
+  "size": 0,
+  "aggs": {
+    "labels": {
+      "nested": {
+        "path": "googleVision.responses.labelAnnotations"
+      },
+      "aggs": {
+        "labels": {
+          "terms": { 
+              "field": "googleVision.responses.labelAnnotations.description.keyword", 
+              "order": { "_count": "desc" } ,
+              "size": 500
+            }
+        }
+      }
+    }
+  }
+}
+'
+
+curl -XGET 'localhost:9200/_search?pretty' -H 'Content-Type: application/json' -d'
+{
+  "query": {
+    "nested": {
+      "path": "googleVision.responses.labelAnnotations",
+      "score_mode": "avg",
+      "query": {
+        "bool": {
+          "must": [
+            { "match": { "googleVision.responses.labelAnnotations.description": "street" } },
+            { "range": { "googleVision.responses.labelAnnotations.score": { "lt": 55 } } }
+          ]
+        }
+      }
+    }
+  },
+  "aggs": {
+    "labels": {
+      "nested": {
+        "path": "googleVision.responses.labelAnnotations"
+      },
+      "aggs": {
+        "jaja": {
+          "terms": { "field": "googleVision.responses.labelAnnotations.description.keyword" }
+        }
+      }
+    }
+  }
+}
+'
+
+curl -XGET 'localhost:9200/_search?pretty' -H 'Content-Type: application/json' -d'
+{
+  "query": {
+    "match_phrase_prefix" : {
+        "description" : {
+            "query": "vis", 
+            "slop":  10,
+            "max_expansions": 50
+        }
+    }
+  }
+}
+'
+
+curl -XGET 'localhost:9200/_search?pretty' -H 'Content-Type: application/json' -d'
+{
+  "query": {
+    "nested": {
+      "path": "googleVision.responses.labelAnnotations",
+      "score_mode": "avg",
+      "query": {
+        "bool": {
+          "must": [
+            { "term": { "googleVision.responses.labelAnnotations.description": "wool" } },
+            { "range": { "googleVision.responses.labelAnnotations.score": { "lte": 100, "gte": 10 } } }
+          ]
+        }
+      }
+    }
+  }
+}
+'
+
+curl -XGET 'localhost:9200/_search?pretty' -H 'Content-Type: application/json' -d'
+{
+    "query": {
+      "bool": {
+        "must": [
+          {
+            "nested": {
+              "path": "googleVision.responses.labelAnnotations",
+              "query": {
+                "bool": {
+                  "must": [
+                    {
+                      "range": {
+                        "googleVision.responses.labelAnnotations.score": {
+                          "lte": 100,
+                          "gte": 10
+                        }
+                      }
+                    },
+                    {
+                      "term": {
+                        "googleVision.responses.labelAnnotations.description": "wool"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "nested": {
+              "path": "googleVision.responses.labelAnnotations",
+              "query": {
+                "bool": {
+                  "must": [
+                    {
+                      "range": {
+                        "googleVision.responses.labelAnnotations.score": {
+                          "lte": 100,
+                          "gte": 10
+                        }
+                      }
+                    },
+                    {
+                      "term": {
+                        "googleVision.responses.labelAnnotations.description": "sky"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      }
+  }
+}'
+
+
+
