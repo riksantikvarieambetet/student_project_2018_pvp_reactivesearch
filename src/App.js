@@ -16,6 +16,7 @@ import {
 } from '@appbaseio/reactivesearch';
 
 
+
 /* {
   "query": {
     "match_phrase_prefix": {
@@ -30,44 +31,52 @@ import {
 
 class App extends Component {
 
-  textFieldQuery = (value, props) => {
-    return (
-      {
-        "query": {
-          "multi_match": {
-            "fields": ["description", "tag"],
-            "query": value,
-            "type": "phrase_prefix"
-          }
-        }
-      }
-    );
+  constructor(props) {
+    super(props);
+    this.state = {
+      selectedLabels: new Set(),
+      query: null
+    };
   }
 
-  MultiListQuery = (value, props) => {
-    return (
-      {
-        "query": {
-          "nested": {
-            "path": "googleVision.responses.labelAnnotations",
-            "score_mode": "avg",
-            "query": {
-              "bool": {
-                "must": [
-                  { "match": { "googleVision.responses.labelAnnotations.description": "street" } },
-                  { "range": { "googleVision.responses.labelAnnotations.score": { "lt": 55 } } }
-                ]
-              }
+  setAppstateQuery = (newQuery) => {
+    this.setState({ query: newQuery })
+  }
+
+  textFieldQuery = (value) => {
+    if (value === "") {
+      return (
+        {
+          "query": {
+            "match_all": {}
+          }
+        }
+      );
+    }
+    else {
+      return (
+        {
+          "query": {
+            "multi_match": {
+              "fields": ["description", "tag"],
+              "query": value,
+              "type": "most_fields",
+              "fuzziness": "AUTO"
             }
           }
         }
-      }
-    )
+      );
+    }
   }
 
-  MultiListQuery2 = (value, props) => {
+  labelDefaultQuery = () => {
     return (
       {
+        "query": {
+          "bool": {
+            "must": this.state.query
+          }
+        },
         "size": 0,
         "aggs": {
           "labels": {
@@ -88,7 +97,6 @@ class App extends Component {
       }
     )
   }
-
 
   render() {
     // googleVision.responses.labelAnnotations
@@ -111,13 +119,14 @@ class App extends Component {
             />
             <ReactiveComponent
               componentId="LabelAnnotation"
-              defaultQuery={this.MultiListQuery2}
+              defaultQuery={this.labelDefaultQuery}
+              URLParams={true}
               react={{
                 and: ["textSearch"]
               }}
             >
               <LabelAnnotationList
-                componentId="LabelAnnotationList"
+                setAppstateQuery={this.setAppstateQuery}
               />
             </ReactiveComponent>
           </div>

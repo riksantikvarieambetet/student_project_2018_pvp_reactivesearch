@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import LabelListItem from './LabelListItem'
 
+import { ReactiveList } from '@appbaseio/reactivesearch';
+
+
 class LabelAnnotationList extends Component {
 
   constructor(props) {
@@ -17,7 +20,9 @@ class LabelAnnotationList extends Component {
     } else {
       this.state.selectedLabels.add(label);
     }
-    this.buildQuery()
+    let query = this.buildQuery()
+    this.props.setAppstateQuery(query)
+    this.updateQuery(query)
   }
 
   buildQuery = () => {
@@ -49,9 +54,8 @@ class LabelAnnotationList extends Component {
             }
           }
         });
-    })
-    this.updateQuery(queryMusts);
-    console.log(queryMusts)
+    });
+    return queryMusts;
   }
 
   updateQuery = (musts) => {
@@ -61,25 +65,26 @@ class LabelAnnotationList extends Component {
           "bool": {
             "must": musts
           }
-        }
+        },
+        value: Array.from(this.state.selectedLabels)
       }
     );
   }
 
-
   createLabelListItems = (buckets) => {
-    return (buckets.map(item => (
+    return (buckets.map(item =>
       <LabelListItem
         key={item.key}
         handleItemChange={this.setSelectedLabels}
         label={item.key}
         count={item.doc_count}
+        onChange={this.setSelectedLabels}
+        initialState={this.state.selectedLabels.has(item.key) ? true : false}
       />
-    )));
+    ));
   }
 
   render() {
-    console.log(this.props)
     if (this.props.aggregations) {
       return (
         this.createLabelListItems(this.props.aggregations.labels.labels.buckets)

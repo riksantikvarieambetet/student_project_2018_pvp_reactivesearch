@@ -161,5 +161,30 @@ curl -XGET 'localhost:9200/_search?pretty' -H 'Content-Type: application/json' -
   }
 }'
 
+/// multi_match med nested
+"query": {
+    "bool": {
+        "should": [
+            {
+                "nested": {
+                    "path": "authors",
+                    "query": {
+                        "multi_match": {
+                            "query": "higgs",
+                            "fields": ["last_name^2"]
+                        }
+                    }
+                } 
+            },
+            {
+                "multi_match": {
+                    "query": "higgs",
+                    "fields": ["abstract.summary^5"]
+                }
+            }
+        ]
+    }
+}
+
 
 

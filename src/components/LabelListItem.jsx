@@ -16,7 +16,8 @@ class LabelListItem extends Component {
   }
 
   render() {
-    const { label, count } = this.props;
+    const { label, count, initialState } = this.props;
+    this.state.checked = initialState;
     const { checked } = this.state;
     return (
       <div className="label-list-item" style={{ "marginLeft": "10px", "marginTop": "5px" }}>
@@ -28,7 +29,7 @@ class LabelListItem extends Component {
             onChange={this.toggleItemChange}
           />
 
-          {label}
+          {label + "    "}
           {count}
         </label>
       </div>
