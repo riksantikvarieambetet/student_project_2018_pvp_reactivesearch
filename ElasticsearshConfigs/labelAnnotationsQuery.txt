@@ -186,5 +186,26 @@ curl -XGET 'localhost:9200/_search?pretty' -H 'Content-Type: application/json' -
     }
 }
 
+curl -XGET 'ul-aomlab01.testraa.se:8080/_search?pretty' -H 'Content-Type: application/json' -d'
+      {
+        "size": 0,
+        "aggs": {
+          "colors": {
+            "nested": {
+              "path": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors"
+            },
+            "aggs": {
+              "colors": {
+                "terms": {
+                  "field": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.h",
+                                    "field": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.s",
+                                                      "field": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.l",
 
 
+                  "size": 100000
+                }
+              }
+            }
+          }
+        }
+      }'

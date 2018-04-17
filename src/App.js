@@ -1,6 +1,7 @@
 import './App.css';
 import React, { Component } from 'react';
 import LabelAnnotationList from './components/LabelAnnotationList'
+import ColorPicker from './components/ColorPicker'
 import {
   ReactiveBase,
   SingleList,
@@ -35,7 +36,8 @@ class App extends Component {
     super(props);
     this.state = {
       selectedLabels: new Set(),
-      query: null
+      query: null,
+      colorQuery: null
     };
   }
 
@@ -98,16 +100,39 @@ class App extends Component {
     )
   }
 
+  ColorDefaultQuery = () => {
+    return (
+      {
+        "size": 0,
+        "aggs": {
+          "colors": {
+            "nested": {
+              "path": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors"
+            },
+            "aggs": {
+              "colors": {
+                "terms": {
+                  "field": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.h",
+                  "size": 100000
+                }
+              }
+            }
+          }
+        }
+      }
+    )
+  }
+
   render() {
     // googleVision.responses.labelAnnotations
     return (
       <ReactiveBase
         app="images"
-        url='http://localhost:9200/'>
+        url='http://ul-aomlab01.testraa.se:8080/'>
 
         <div style={{ display: "flex", flexDirection: "row" }}>
 
-          <div style={{ display: "flex", flexDirection: "column", width: "20%" }}>
+          <div style={{ display: "flex", flexDirection: "column", width: "15%" }}>
 
             <TextField
               componentId="textSearch"
@@ -146,10 +171,24 @@ class App extends Component {
               }
             }}
             style={{
-              width: "60%",
+              width: "70%",
               textAlign: "center"
             }}
           />
+
+          <div style={{ display: "flex", flexDirection: "column", width: "15%" }}>
+            <ReactiveComponent
+              componentId="colorpicker"
+              defaultQuery={this.ColorDefaultQuery}
+              react={{
+                and: ["textSearch"]
+              }}
+            >
+              <ColorPicker
+              />
+            </ReactiveComponent>
+          </div>
+
         </div>
       </ReactiveBase>
     );
