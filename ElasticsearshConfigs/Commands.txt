@@ -3,16 +3,16 @@
 install folder --> elasticsarch.exe
 
 --Serverstatus:
-curl 'localhost:9200/_cat/health?v'
+curl 'ul-aomlab01.testraa.se:8080/_cat/health?v'
 
 --Lista alla noder på servern:
-curl 'localhost:9200/_cat/indices?v'
+curl 'ul-aomlab01.testraa.se:8080/_cat/indices?v'
 
 --Lägg till index(Collection) i databasen:
 curl -XPUT 'localhost:9200/-what you want-?pretty'
 
 --Ta bort index(Collection) från databas:
-curl -XDELETE 'localhost:9200/-what you want-?pretty'
+curl -XDELETE 'ul-aomlab01.testraa.se:8080/images?pretty'
 
 --Posta objekt i databas:
 curl -XPOST 'localhost:9200/--Index--/1?pretty' -H 'Content-Type: application/json' -d '{"key": "value"}'
@@ -23,10 +23,10 @@ curl -XGET 'localhost:9200/customer/external/1?pretty'
 --Specificerar vi inte ett ID används POST istället för PUT
 
 --Kör inmatning från fil(lägg filen i 'bin'):
-curl -XPOST 'localhost:9200/bank/account/_bulk?pretty' --data-binary "@accounts.json" -H 'Content-Type: application/json'
+curl -XPOST 'ul-aomlab01.testraa.se:8080/images/googleVision/_bulk?pretty' --data-binary "@/home/affe/projects/pvp_reactivesearch/ElasticsearshConfigs/data2.json" -H 'Content-Type: application/json'
 
 --hitta alla object i collection:
-$ curl -XPOST 'localhost:9200/bank/_search?pretty' -d '
+$ curl -XPOST 'ul-aomlab01.testraa.se:8080/images/_search?pretty' -d '
 {
   "query": { "match_all": {} }
 }' -H 'Content-Type: application/json'
