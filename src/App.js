@@ -34,7 +34,6 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedLabels: new Set(),
       query: null
     };
   }
@@ -98,6 +97,51 @@ class App extends Component {
     )
   }
 
+  /* 
+  ,
+              "score": {
+                "histogram": {
+                  "field": "googleVision.responses.labelAnnotations.score",
+                  "interval": 5,
+                  "extended_bounds": {
+                    "min": 0,
+                    "max": 95
+                  }
+                }
+              }
+  */
+  /*   
+    "aggs": {
+      "score": {
+        "histogram": {
+          "field": "googleVision.responses.labelAnnotations.score",
+          "interval": 5
+        }
+      }
+    } 
+    
+  */
+
+  /* 
+  
+        "aggs": {
+          "histo": {
+            "nested": {
+              "path": "googleVision.responses.labelAnnotations"
+            },
+            "aggs": {
+              "score": {
+                "histogram": {
+                  "field": "googleVision.responses.labelAnnotations.score",
+                  "interval": 5
+                }
+              }
+            }
+          }
+        }
+
+  */
+
   render() {
     // googleVision.responses.labelAnnotations
     return (
@@ -118,9 +162,8 @@ class App extends Component {
               customQuery={this.textFieldQuery}
             />
             <ReactiveComponent
-              componentId="LabelAnnotation"
+              componentId="LabelAnnotationList"
               defaultQuery={this.labelDefaultQuery}
-              URLParams={true}
               react={{
                 and: ["textSearch"]
               }}
@@ -136,7 +179,7 @@ class App extends Component {
             size={20}
             pagination={true}
             react={{
-              and: ["textSearch", "LabelAnnotation"]
+              and: ["textSearch", "LabelAnnotationList"]
             }}
             onData={(res) => {
               return {

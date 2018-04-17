@@ -1,16 +1,18 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import LabelListItem from './LabelListItem'
+import RectiveHistoslider from './ReactiveHistoslider'
 
-import { ReactiveList } from '@appbaseio/reactivesearch';
 
+import { ReactiveComponent } from '@appbaseio/reactivesearch';
 
 class LabelAnnotationList extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      selectedLabels: new Set()
+      selectedLabels: new Set(),
+      value: [0, 100] // testing sliders
     };
   }
 
@@ -20,6 +22,11 @@ class LabelAnnotationList extends Component {
     } else {
       this.state.selectedLabels.add(label);
     }
+    this.updateQueryState()
+  }
+
+  updateQueryState = () => {
+    //console.log('updating query state ' + Array.from(this.state.selectedLabels))
     let query = this.buildQuery()
     this.props.setAppstateQuery(query)
     this.updateQuery(query)
@@ -39,8 +46,8 @@ class LabelAnnotationList extends Component {
                   {
                     "range": {
                       "googleVision.responses.labelAnnotations.score": {
-                        "lte": 100,
-                        "gte": 0
+                        "lte": this.state.value[1],
+                        "gte": this.state.value[0]
                       }
                     }
                   },
@@ -78,16 +85,78 @@ class LabelAnnotationList extends Component {
         handleItemChange={this.setSelectedLabels}
         label={item.key}
         count={item.doc_count}
-        onChange={this.setSelectedLabels}
-        initialState={this.state.selectedLabels.has(item.key) ? true : false}
+        initialState={this.state.selectedLabels.has(item.key)}
       />
     ));
+  }
+  //Array.from(this.state.selectedLabels)
+  ReactiveHistosliderDefaultQuery = () => {
+    return (
+      {
+        "query": {
+          "nested": {
+            "path": "googleVision.responses.labelAnnotations",
+            "query": {
+              "bool": {
+                "filter": [
+                  {
+                    "terms": {
+                      "googleVision.responses.labelAnnotations.description": Array.from(this.state.selectedLabels)
+                    }
+                  }
+                ]
+              }
+            },
+            "inner_hits": {}
+          }
+        },
+        "aggs": {
+          "labelAnnotations": { // name of aggregated field 
+            "nested": {
+              "path": "googleVision.responses.labelAnnotations"
+            },
+            "aggs": {
+              "inner": {
+                "filter": {
+                  "terms": {
+                    "googleVision.responses.labelAnnotations.description": Array.from(this.state.selectedLabels)
+                  }
+                },
+                "aggs": {
+                  "score": {
+                    "histogram": {
+                      "field": "googleVision.responses.labelAnnotations.score",
+                      "interval": 5,
+                      "extended_bounds": {
+                        "min": 0,
+                        "max": 95
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    )
   }
 
   render() {
     if (this.props.aggregations) {
       return (
-        this.createLabelListItems(this.props.aggregations.labels.labels.buckets)
+        <div>
+          <ReactiveComponent
+            componentId="RectiveHistoslider"
+            defaultQuery={this.ReactiveHistosliderDefaultQuery}
+            react={{
+              and: ["textSearch", "LabelAnnotationList"]
+            }}
+          >
+            <RectiveHistoslider />
+          </ReactiveComponent>
+          {this.createLabelListItems(this.props.aggregations.labels.labels.buckets)}
+        </div>
       )
     }
     return null;

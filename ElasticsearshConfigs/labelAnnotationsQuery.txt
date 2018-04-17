@@ -186,5 +186,100 @@ curl -XGET 'localhost:9200/_search?pretty' -H 'Content-Type: application/json' -
     }
 }
 
+curl -XGET 'localhost:9200/_search?pretty' -H 'Content-Type: application/json' -d'
+{
+  "size": 0,
+  "aggs": {
+    "histo": {
+      "nested": {
+        "path": "googleVision.responses.labelAnnotations"
+      },
+      "aggs": {
+        "score": {
+          "histogram": {
+            "field": "googleVision.responses.labelAnnotations.score",
+            "interval": 5
+          }
+        }
+      }
+    }
+  }
+}'
+
+curl -XGET 'localhost:9200/_search?pretty' -H 'Content-Type: application/json' -d'
+{
+    "query": {
+    "nested": {
+      "path": "googleVision.responses.labelAnnotations",
+      "query": {
+        "bool": {
+          "filter": [
+            {
+              "terms": {
+                "googleVision.responses.labelAnnotations.description": ["sky"]
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}'
+
+curl -XGET 'localhost:9200/_search?pretty' -H 'Content-Type: application/json' -d'
+{
+  "query": {
+    "nested": {
+      "path": "googleVision.responses.labelAnnotations",
+      "query": {
+        "bool": {
+          "filter": [
+            {
+              "terms": {
+                "googleVision.responses.labelAnnotations.description": [
+             "sky", "town"
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "inner_hits": {}
+    }
+  },
+  "aggs": {
+    "labelAnnotations": {
+      "nested": {
+        "path": "googleVision.responses.labelAnnotations"
+      },
+      "aggs": {
+        "inner": {
+          "filter": {
+            "terms": {
+              "googleVision.responses.labelAnnotations.description": [
+               "sky", "town"
+              ]
+            }
+          },
+      "aggs": {
+        "score": {
+          "histogram": {
+            "field": "googleVision.responses.labelAnnotations.score",
+            "interval": 5,
+            "extended_bounds" : {
+                    "min" : 0,
+                    "max" : 95
+                }
+          }
+        }
+      }
+        }
+      }
+    }
+  }
+}'
+
+
+
 
 
