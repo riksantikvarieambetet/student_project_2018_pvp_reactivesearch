@@ -12,7 +12,7 @@ class LabelAnnotationList extends Component {
     super(props);
     this.state = {
       selectedLabels: new Set(),
-      value: [0, 100] // testing sliders
+      value: [0, 100]
     };
   }
 
@@ -32,12 +32,46 @@ class LabelAnnotationList extends Component {
     this.updateQuery(query)
   }
 
+  updateQuery = (musts) => {
+    this.props.setQuery(
+      {
+        "query": {
+          "bool": {
+            "must": musts
+          }
+        },
+        value: Array.from(this.state.selectedLabels) // behövs endast för routing
+      }
+    );
+  }
+
   buildQuery = () => {
     let labels = Array.from(this.state.selectedLabels)
     let queryMusts = [];
     labels.map((label) => {
       queryMusts.push(
         {
+          "nested": {
+            "path": "googleVision.responses.labelAnnotations",
+            "query": {
+              "bool": {
+                "must": {
+                  "term": {
+                    "googleVision.responses.labelAnnotations.description.keyword": label
+                  }
+                }
+              }
+            }
+          }
+        }
+      );
+    });
+    return queryMusts;
+  }
+
+  /* 
+  Old push to query musts
+  {
           "nested": {
             "path": "googleVision.responses.labelAnnotations",
             "query": {
@@ -60,23 +94,10 @@ class LabelAnnotationList extends Component {
               }
             }
           }
-        });
-    });
-    return queryMusts;
-  }
+        }
+  
+  */
 
-  updateQuery = (musts) => {
-    this.props.setQuery(
-      {
-        "query": {
-          "bool": {
-            "must": musts
-          }
-        },
-        value: Array.from(this.state.selectedLabels)
-      }
-    );
-  }
 
   createLabelListItems = (buckets) => {
     return (buckets.map(item =>
@@ -90,46 +111,74 @@ class LabelAnnotationList extends Component {
     ));
   }
   //Array.from(this.state.selectedLabels)
-  ReactiveHistosliderDefaultQuery = () => {
-    return (
-      {
-        "query": {
-          "nested": {
-            "path": "googleVision.responses.labelAnnotations",
-            "query": {
-              "bool": {
-                "filter": [
-                  {
-                    "terms": {
-                      "googleVision.responses.labelAnnotations.description": Array.from(this.state.selectedLabels)
+  reactiveHistosliderDefaultQuery = () => {
+    let labels = Array.from(this.state.selectedLabels);
+    if (labels.length === 0) {
+      return (
+        {
+          "size": 0,
+          "aggs": {
+            "labelAnnotations": {
+              "nested": {
+                "path": "googleVision.responses.labelAnnotations"
+              },
+              "aggs": {
+                "score": {
+                  "histogram": {
+                    "field": "googleVision.responses.labelAnnotations.score",
+                    "interval": 5,
+                    "extended_bounds": {
+                      "min": 0,
+                      "max": 95
                     }
                   }
-                ]
+                }
               }
-            },
-            "inner_hits": {}
+            }
           }
-        },
-        "aggs": {
-          "labelAnnotations": { // name of aggregated field 
+        }
+      )
+    } else {
+      return (
+        {
+          "query": {
             "nested": {
-              "path": "googleVision.responses.labelAnnotations"
-            },
-            "aggs": {
-              "inner": {
-                "filter": {
-                  "terms": {
-                    "googleVision.responses.labelAnnotations.description": Array.from(this.state.selectedLabels)
-                  }
-                },
-                "aggs": {
-                  "score": {
-                    "histogram": {
-                      "field": "googleVision.responses.labelAnnotations.score",
-                      "interval": 5,
-                      "extended_bounds": {
-                        "min": 0,
-                        "max": 95
+              "path": "googleVision.responses.labelAnnotations",
+              "query": {
+                "bool": {
+                  "filter": [
+                    {
+                      "terms": {
+                        "googleVision.responses.labelAnnotations.description.keyword": labels
+                      }
+                    }
+                  ]
+                }
+              },
+              "inner_hits": {}
+            }
+          },
+          "aggs": {
+            "labelAnnotations": { // name of aggregated field 
+              "nested": {
+                "path": "googleVision.responses.labelAnnotations"
+              },
+              "aggs": {
+                "inner": {
+                  "filter": {
+                    "terms": {
+                      "googleVision.responses.labelAnnotations.description.keyword": labels
+                    }
+                  },
+                  "aggs": {
+                    "score": {
+                      "histogram": {
+                        "field": "googleVision.responses.labelAnnotations.score",
+                        "interval": 5,
+                        "extended_bounds": {
+                          "min": 0,
+                          "max": 95
+                        }
                       }
                     }
                   }
@@ -138,22 +187,22 @@ class LabelAnnotationList extends Component {
             }
           }
         }
-      }
-    )
+      )
+    }
   }
 
   render() {
+    console.log(this.state.value)
     if (this.props.aggregations) {
       return (
         <div>
           <ReactiveComponent
             componentId="RectiveHistoslider"
-            defaultQuery={this.ReactiveHistosliderDefaultQuery}
-            react={{
-              and: ["textSearch", "LabelAnnotationList"]
-            }}
+            defaultQuery={this.reactiveHistosliderDefaultQuery}
           >
-            <RectiveHistoslider />
+            <RectiveHistoslider
+              setParentValueRange={(newScore) => { this.setState({ value: newScore }) }}
+            />
           </ReactiveComponent>
           {this.createLabelListItems(this.props.aggregations.labels.labels.buckets)}
         </div>

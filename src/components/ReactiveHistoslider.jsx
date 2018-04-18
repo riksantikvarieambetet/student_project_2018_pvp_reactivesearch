@@ -3,51 +3,69 @@ import Histoslider from 'histoslider';
 
 class ReactiveHistoslider extends Component {
 
+  // warning it might be temting to pase state from parent. DONT it will make Histoslider chrach! 
   constructor(props) {
     super(props);
     this.state = {
-      value: [0, 100]
+      value: [0, 100] // testing sliders
     };
   }
 
-  onSliderChange = (value) => {
-    this.setState({
-      value,
-    });
+  setValueRange = (newValue) => {
+    this.setState({ value: newValue });
+    this.updateQuery()
+    // this.props.setParentValueRange(newValue); // TODO remove not needed because we set the range in this scope 
+  }
+
+  updateQuery = () => {
+    this.props.setQuery(
+      {
+        "nested": {
+          "path": "googleVision.responses.labelAnnotations",
+          "query": {
+            "bool": {
+              "must": {
+                "range": {
+                  "googleVision.responses.labelAnnotations.score": {
+                    "lte": this.state.value[1],
+                    "gte": this.state.value[0]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    );
   }
 
   render() {
-    console.dir(this.props)
-    return (
-      <Histoslider
-        // An array of objects to create the histogram
+    let histosliderData = [];
+    let mappedHistosliderData = [];
+    if (this.props.aggregations) {
+      histosliderData = this.props.aggregations.labelAnnotations.inner ?
+        this.props.aggregations.labelAnnotations.inner.score.buckets
+        : this.props.aggregations.labelAnnotations.score.buckets;
 
-        data={[
-          {
-            x0: 0,    // Start of the bucket
-            x: 1,     // End of the bucket
-            y: 100    // Value
-          },
-          {
-            x0: 1,    // Start of the bucket
-            x: 2,     // End of the bucket
-            y: 120    // Value
-          }
+      histosliderData.map((item) => {
+        mappedHistosliderData.push({ x0: item.key, x: item.key + 5, y: item.doc_count })
+      })
+      // console.log(mappedHistosliderData)
+      return (
+        <div>
+          <Histoslider
+            data={mappedHistosliderData}
+            padding={20}
+            width={200}
+            height={100}
+            selection={this.state.value}
+            onChange={this.setValueRange}
+          />
+        </div>
 
-        ]}
-        // How much to pad the slider and histogram by, defaults to 20
-        padding={20}
-        width={300}
-
-        // The end of the histogram, defaults to the maximum value in the array
-
-        // The extent of the selection, this doesn't have to be sorted (and you shouldn't sort it to store it)
-        selection={this.state.value}
-        // A function to handle a change in the selection
-        onChange={this.onSliderChange}
-      />
-    )
-
+      )
+    }
+    return null;
   }
 }
 

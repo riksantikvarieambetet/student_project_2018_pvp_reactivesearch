@@ -97,51 +97,6 @@ class App extends Component {
     )
   }
 
-  /* 
-  ,
-              "score": {
-                "histogram": {
-                  "field": "googleVision.responses.labelAnnotations.score",
-                  "interval": 5,
-                  "extended_bounds": {
-                    "min": 0,
-                    "max": 95
-                  }
-                }
-              }
-  */
-  /*   
-    "aggs": {
-      "score": {
-        "histogram": {
-          "field": "googleVision.responses.labelAnnotations.score",
-          "interval": 5
-        }
-      }
-    } 
-    
-  */
-
-  /* 
-  
-        "aggs": {
-          "histo": {
-            "nested": {
-              "path": "googleVision.responses.labelAnnotations"
-            },
-            "aggs": {
-              "score": {
-                "histogram": {
-                  "field": "googleVision.responses.labelAnnotations.score",
-                  "interval": 5
-                }
-              }
-            }
-          }
-        }
-
-  */
-
   render() {
     // googleVision.responses.labelAnnotations
     return (
@@ -179,7 +134,7 @@ class App extends Component {
             size={20}
             pagination={true}
             react={{
-              and: ["textSearch", "LabelAnnotationList"]
+              and: ["textSearch", "LabelAnnotationList", "RectiveHistoslider"]
             }}
             onData={(res) => {
               return {
