@@ -283,7 +283,70 @@ curl -XGET 'localhost:9200/_search?pretty' -H 'Content-Type: application/json' -
   }
 }'
 
+curl -XGET 'localhost:9200/_search?pretty' -H 'Content-Type: application/json' -d'
+      {
+        "query": {
+              "nested": {
+                "path": "googleVision.responses.labelAnnotations",
+                "query": {
+                  "bool": {
+                    "must": {
+                      "range": {
+                        "googleVision.responses.labelAnnotations.score": {
+                          "lte": 60,
+                          "gte": 0
+                        }
+                      }
+                    }
+                  }
+                }
+          }
+        }
+      }' 
 
+curl -XGET 'localhost:9200/_search?pretty' -H 'Content-Type: application/json' -d'
+      {
+        "query": {
+          "bool": {
+            "must": []
+          }
+        }
+      }'
 
+// hämtar alla scores för en given labeldescription 
+curl -XGET 'localhost:9200/_search?pretty' -H 'Content-Type: application/json' -d'
+      {
+        "query": {
+              "nested": {
+                "path": "googleVision.responses.labelAnnotations",
+                "query": {
+                  "bool": {
+                    "must": {
+                      "match": {
+                        "googleVision.responses.labelAnnotations.description.keyword": "wool"
+                      }
+                    }
+                  }
+                }
+          }
+        },
+        "size": 0,
+        "aggs": {
+          "labelAnnotations": {
+              "nested": {
+                  "path": "googleVision.responses.labelAnnotations"
+                },
+                "aggs": {
+                  "scores": {
+                    "terms": {
+                    "field": "googleVision.responses.labelAnnotations.score"
 
+                    }
 
+                  }
+ 
+        
+      }
+    }
+  }
+      }' 

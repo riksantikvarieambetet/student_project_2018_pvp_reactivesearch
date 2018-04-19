@@ -1,8 +1,16 @@
 import React, { Component } from 'react';
 
+
 class LabelListItem extends Component {
-  state = {
-    checked: false,
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      checked: props.initialState
+    };
+    if (this.props.initialState) {
+      console.log("label " + this.props.label + " " + this.props.initialState)
+    }
   }
 
   toggleItemChange = () => {
@@ -17,24 +25,31 @@ class LabelListItem extends Component {
 
   render() {
     const { label, count, initialState } = this.props;
-    this.state.checked = initialState;
     const { checked } = this.state;
     return (
       <div className="label-list-item" style={{ "marginLeft": "10px", "marginTop": "5px" }}>
-        <label>
+        <label className="container">
+          {label + "    "}
+          {count}
           <input
             type="checkbox"
             value={label}
             checked={checked}
             onChange={this.toggleItemChange}
           />
-
-          {label + "    "}
-          {count}
+          <span class="checkmark"></span>
         </label>
       </div>
     );
   }
 }
+/* 
+
+<label class="container">One
+  <input type="checkbox" checked="checked">
+    <span class="checkmark"></span>
+</label> 
+
+*/
 
 export default LabelListItem;

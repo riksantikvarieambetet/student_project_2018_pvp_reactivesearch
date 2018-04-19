@@ -4,7 +4,7 @@ import LabelListItem from './LabelListItem'
 import RectiveHistoslider from './ReactiveHistoslider'
 
 
-import { ReactiveComponent } from '@appbaseio/reactivesearch';
+import { ReactiveComponent, DataController } from '@appbaseio/reactivesearch';
 
 class LabelAnnotationList extends Component {
 
@@ -27,9 +27,9 @@ class LabelAnnotationList extends Component {
 
   updateQueryState = () => {
     //console.log('updating query state ' + Array.from(this.state.selectedLabels))
-    let query = this.buildQuery()
-    this.props.setAppstateQuery(query)
-    this.updateQuery(query)
+    let newQuery = this.buildQuery()
+    this.props.setAppstateQuery(newQuery)
+    this.updateQuery(newQuery)
   }
 
   updateQuery = (musts) => {
@@ -46,32 +46,37 @@ class LabelAnnotationList extends Component {
   }
 
   buildQuery = () => {
+    console.log(Array.from(this.state.selectedLabels))
     let labels = Array.from(this.state.selectedLabels)
     let queryMusts = [];
     labels.map((label) => {
+      // console.log("-------> " + this.state.value[0] + " " + this.state.value[1])
       queryMusts.push(
         {
           "nested": {
             "path": "googleVision.responses.labelAnnotations",
             "query": {
               "bool": {
-                "must": {
-                  "term": {
-                    "googleVision.responses.labelAnnotations.description.keyword": label
+                "must": [
+                  { "term": { "googleVision.responses.labelAnnotations.description.keyword": label } },
+                  {
+                    "range": {
+                      "googleVision.responses.labelAnnotations.score": {
+                        "lte": this.state.value[1],
+                        "gte": this.state.value[0]
+                      }
+                    }
                   }
-                }
+                ]
               }
             }
           }
         }
       );
     });
-    return queryMusts;
-  }
-
-  /* 
-  Old push to query musts
-  {
+    if (queryMusts.length === 0) {
+      queryMusts.push(
+        {
           "nested": {
             "path": "googleVision.responses.labelAnnotations",
             "query": {
@@ -84,32 +89,17 @@ class LabelAnnotationList extends Component {
                         "gte": this.state.value[0]
                       }
                     }
-                  },
-                  {
-                    "term": {
-                      "googleVision.responses.labelAnnotations.description.keyword": label
-                    }
                   }
                 ]
               }
             }
           }
         }
-  
-  */
-
-
-  createLabelListItems = (buckets) => {
-    return (buckets.map(item =>
-      <LabelListItem
-        key={item.key}
-        handleItemChange={this.setSelectedLabels}
-        label={item.key}
-        count={item.doc_count}
-        initialState={this.state.selectedLabels.has(item.key)}
-      />
-    ));
+      )
+    }
+    return queryMusts;
   }
+  // obs kolla att keyword finns på alla label queries 
   //Array.from(this.state.selectedLabels)
   reactiveHistosliderDefaultQuery = () => {
     let labels = Array.from(this.state.selectedLabels);
@@ -191,17 +181,32 @@ class LabelAnnotationList extends Component {
     }
   }
 
+  createLabelListItems = (buckets) => {
+    return (buckets.map(item =>
+      <LabelListItem
+        key={item.key}
+        handleItemChange={this.setSelectedLabels}
+        label={item.key}
+        count={item.doc_count}
+        initialState={this.state.selectedLabels.has(item.key)}
+      />
+    ));
+  }
+
   render() {
-    console.log(this.state.value)
     if (this.props.aggregations) {
       return (
         <div>
           <ReactiveComponent
             componentId="RectiveHistoslider"
             defaultQuery={this.reactiveHistosliderDefaultQuery}
+            react={{
+              and: ["textSearch"]
+            }}
           >
             <RectiveHistoslider
               setParentValueRange={(newScore) => { this.setState({ value: newScore }) }}
+              parentBuildQuery={this.buildQuery}
             />
           </ReactiveComponent>
           {this.createLabelListItems(this.props.aggregations.labels.labels.buckets)}
@@ -213,3 +218,32 @@ class LabelAnnotationList extends Component {
 }
 
 export default LabelAnnotationList;
+
+export function labelAnnotationListDefaultQuery(query) {
+  return (
+    {
+      "query": {
+        "bool": {
+          "must": query
+        }
+      },
+      "size": 0,
+      "aggs": {
+        "labels": {
+          "nested": {
+            "path": "googleVision.responses.labelAnnotations"
+          },
+          "aggs": {
+            "labels": {
+              "terms": {
+                "field": "googleVision.responses.labelAnnotations.description.keyword",
+                "order": { "_count": "desc" },
+                "size": 100000
+              }
+            }
+          }
+        }
+      }
+    }
+  )
+}

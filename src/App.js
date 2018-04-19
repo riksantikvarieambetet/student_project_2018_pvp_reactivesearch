@@ -1,6 +1,6 @@
 import './App.css';
 import React, { Component } from 'react';
-import LabelAnnotationList from './components/LabelAnnotationList'
+import LabelAnnotationList, { labelAnnotationListDefaultQuery } from './components/LabelAnnotationList'
 import {
   ReactiveBase,
   SingleList,
@@ -68,35 +68,6 @@ class App extends Component {
     }
   }
 
-  labelDefaultQuery = () => {
-    return (
-      {
-        "query": {
-          "bool": {
-            "must": this.state.query
-          }
-        },
-        "size": 0,
-        "aggs": {
-          "labels": {
-            "nested": {
-              "path": "googleVision.responses.labelAnnotations"
-            },
-            "aggs": {
-              "labels": {
-                "terms": {
-                  "field": "googleVision.responses.labelAnnotations.description.keyword",
-                  "order": { "_count": "desc" },
-                  "size": 100000
-                }
-              }
-            }
-          }
-        }
-      }
-    )
-  }
-
   render() {
     // googleVision.responses.labelAnnotations
     return (
@@ -106,7 +77,7 @@ class App extends Component {
 
         <div style={{ display: "flex", flexDirection: "row" }}>
 
-          <div style={{ display: "flex", flexDirection: "column", width: "20%" }}>
+          <div style={{ display: "flex", flexDirection: "column", maxWidth: "350px", minWidth: "350px" }}>
 
             <TextField
               componentId="textSearch"
@@ -117,10 +88,10 @@ class App extends Component {
               customQuery={this.textFieldQuery}
             />
             <ReactiveComponent
-              componentId="LabelAnnotationList"
-              defaultQuery={this.labelDefaultQuery}
+              componentId="labelAnnotationList"
+              defaultQuery={() => labelAnnotationListDefaultQuery(this.state.query)}
               react={{
-                and: ["textSearch"]
+                and: ["textSearch", "RectiveHistoslider"]
               }}
             >
               <LabelAnnotationList
@@ -134,9 +105,13 @@ class App extends Component {
             size={20}
             pagination={true}
             react={{
-              and: ["textSearch", "LabelAnnotationList", "RectiveHistoslider"]
+              and: ["textSearch", "labelAnnotationList", "RectiveHistoslider"]
             }}
             onData={(res) => {
+              /*  res.googleVision.responses["0"].labelAnnotations.map((item) => {
+                 if (item.description === "sky" && item.score > 60)
+                   console.dir(item.score)
+               }) */
               return {
                 image: res.image.src[0].content,
                 title: res.description,

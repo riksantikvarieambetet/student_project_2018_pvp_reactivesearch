@@ -12,23 +12,33 @@ class ReactiveHistoslider extends Component {
   }
 
   setValueRange = (newValue) => {
+    if (!newValue) return;
+    if (newValue[0] > newValue[1]) {
+      let temp = newValue[0];
+      newValue[0] = newValue[1];
+      newValue[1] = temp + 5;
+    }
+    newValue[0] = Math.floor(newValue[0])
+    newValue[1] = Math.floor(newValue[1])
     this.setState({ value: newValue });
-    this.updateQuery()
-    // this.props.setParentValueRange(newValue); // TODO remove not needed because we set the range in this scope 
   }
 
   updateQuery = () => {
+    let gte = this.state.value[0];
+    let lte = this.state.value[1];
     this.props.setQuery(
       {
-        "nested": {
-          "path": "googleVision.responses.labelAnnotations",
-          "query": {
-            "bool": {
-              "must": {
-                "range": {
-                  "googleVision.responses.labelAnnotations.score": {
-                    "lte": this.state.value[1],
-                    "gte": this.state.value[0]
+        "query": {
+          "nested": {
+            "path": "googleVision.responses.labelAnnotations",
+            "query": {
+              "bool": {
+                "must": {
+                  "range": {
+                    "googleVision.responses.labelAnnotations.score": {
+                      "gte": gte,
+                      "lte": lte
+                    }
                   }
                 }
               }
@@ -37,7 +47,41 @@ class ReactiveHistoslider extends Component {
         }
       }
     );
+
+    /*  this.props.setQuery(
+       {
+         "query": {
+           "bool": {
+             "must": query
+           }
+         }
+       }
+     ); */
   }
+
+  /* 
+  
+        {
+        "query": {
+          "nested": {
+            "path": "googleVision.responses.labelAnnotations",
+            "query": {
+              "bool": {
+                "must": {
+                  "range": {
+                    "googleVision.responses.labelAnnotations.score": {
+                      "gte": gte,
+                      "lte": lte
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+  */
 
   render() {
     let histosliderData = [];
@@ -50,27 +94,25 @@ class ReactiveHistoslider extends Component {
       histosliderData.map((item) => {
         mappedHistosliderData.push({ x0: item.key, x: item.key + 5, y: item.doc_count })
       })
-      // console.log(mappedHistosliderData)
+      //  console.log(this.props)
       return (
-        <div>
+        <div
+          onMouseUp={this.updateQuery}
+        >
           <Histoslider
+            style={{ margin: "auto" }}
             data={mappedHistosliderData}
             padding={20}
-            width={200}
-            height={100}
+            width={340}
+            height={120}
             selection={this.state.value}
             onChange={this.setValueRange}
           />
         </div>
-
       )
     }
     return null;
   }
 }
-
-/* &&
-  this.props.aggregations.labels.score.buckets.length > 0 &&
-  this.props.aggregations.labels.labels.buckets.length > 0 */
 
 export default ReactiveHistoslider;
