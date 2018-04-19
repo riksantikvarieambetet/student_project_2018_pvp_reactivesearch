@@ -84,7 +84,7 @@ curl -XGET 'localhost:9200/_search?pretty' -H 'Content-Type: application/json' -
 }
 '
 
-curl -XGET 'localhost:9200/_search?pretty' -H 'Content-Type: application/json' -d'
+curl -XGET 'http://ul-aomlab01.testraa.se:8080/_search?pretty' -H 'Content-Type: application/json' -d'
 {
   "query": {
     "nested": {
@@ -195,17 +195,26 @@ curl -XGET 'ul-aomlab01.testraa.se:8080/_search?pretty' -H 'Content-Type: applic
               "path": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors"
             },
             "aggs": {
-              "colors": {
+              "hsl": {
                 "terms": {
-                  "field": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.h",
-                                    "field": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.s",
-                                                      "field": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.l",
-
-
-                  "size": 100000
+                  "field": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.h"
+                }
+              },
+               "aggs": {
+              "s": {
+                "terms": {
+                  "field": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.s"
+                }
+              },
+               "aggs": {
+              "l": {
+                "terms": {
+                  "field": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.l"
                 }
               }
-            }
+            } 
+            } 
+            }    
           }
         }
       }'

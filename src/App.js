@@ -13,7 +13,9 @@ import {
   SelectedFilters,
   DataSearch,
   MultiList,
-  ReactiveComponent
+  ReactiveComponent,
+  DataController,
+  ReactiveList
 } from '@appbaseio/reactivesearch';
 
 
@@ -100,20 +102,42 @@ class App extends Component {
     )
   }
 
-  ColorDefaultQuery = () => {
+  ColorDefaultQuery = (value, props) => {
+
     return (
+
       {
-        "size": 0,
+        "query": {
+          "nested": {
+            "path": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors",
+            "query": {
+              "bool": {
+                "must": [
+                  { "match": { "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.h": 0 } }
+                ]
+              }
+            }
+          }
+        },
+        "size": 10000,
         "aggs": {
           "colors": {
             "nested": {
               "path": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors"
             },
             "aggs": {
-              "colors": {
+              "h": {
                 "terms": {
-                  "field": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.h",
-                  "size": 100000
+                  "field": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.h"
+
+                },
+                "aggs": {
+                  "s": {
+                    "terms": {
+                      "field": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.s"
+
+                    }
+                  }
                 }
               }
             }
@@ -177,16 +201,17 @@ class App extends Component {
           />
 
           <div style={{ display: "flex", flexDirection: "column", width: "15%" }}>
+
             <ReactiveComponent
-              componentId="colorpicker"
+              componentId="ColorAnnotation"
               defaultQuery={this.ColorDefaultQuery}
-              react={{
-                and: ["textSearch"]
-              }}
             >
-              <ColorPicker
-              />
+              <ColorPicker />
             </ReactiveComponent>
+
+
+
+
           </div>
 
         </div>
