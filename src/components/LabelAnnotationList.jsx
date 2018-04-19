@@ -1,9 +1,5 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 import LabelListItem from './LabelListItem'
-
-import { ReactiveList } from '@appbaseio/reactivesearch';
-
 
 class LabelAnnotationList extends Component {
 

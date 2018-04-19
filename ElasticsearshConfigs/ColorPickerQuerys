@@ -121,30 +121,40 @@ curl -XGET 'http: //ul-aomlab01.testraa.se:8080/_search?pretty' -H 'Content-Type
 }
 
 curl -XGET 'http://ul-aomlab01.testraa.se:8080/_search?pretty' -H 'Content-Type: application/json' -d'
- {
+  {
         "query": {
           "nested": {
             "path": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors",
             "query": {
               "bool": {
                 "must": [
-                  { "match": { "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.s": 10 } }
+                  {"range": { "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.h": {gte: 35, lte: 65}}},
+                  {"range": { "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.s": {gte: 33, lte: 63}}},
+                  {"range": { "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.l": {gte: 56, lte: 76}}} 
                 ]
               }
             }
           }
         },
-        "size": 10,
+        "size": 10000,
         "aggs": {
           "colors": {
             "nested": {
               "path": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors"
             },
             "aggs": {
-              "hsl": {
+              "h": {
                 "terms": {
-                  "field": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.s"
+                  "field": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.h"
 
+                },
+                "aggs": {
+                  "s": {
+                    "terms": {
+                      "field": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.s"
+
+                    }
+                  }
                 }
               }
             }
@@ -182,22 +192,11 @@ curl -XGET 'http://ul-aomlab01.testraa.se:8080/_search?pretty' -H 'Content-Type:
                 "s": {
                 "terms": {
                   "field": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.s"
-
-                },
-                    "hue_sort": {
-            "bucket_sort": {
-                "sort": [
-                    { "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.h": {"order": "desc" }}
-                ]
-
-                
-            }
-        }
+                }
               }
             }
           }
         }
-    
       }        
     }
 }

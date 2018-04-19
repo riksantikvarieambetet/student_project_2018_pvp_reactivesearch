@@ -4,18 +4,9 @@ import LabelAnnotationList from './components/LabelAnnotationList'
 import ColorPicker from './components/ColorPicker'
 import {
   ReactiveBase,
-  SingleList,
-  CategorySearch,
-  SingleRange,
   ResultCard,
-  RangeSlider,
   TextField,
-  SelectedFilters,
-  DataSearch,
-  MultiList,
-  ReactiveComponent,
-  DataController,
-  ReactiveList
+  ReactiveComponent
 } from '@appbaseio/reactivesearch';
 
 
@@ -39,12 +30,16 @@ class App extends Component {
     this.state = {
       selectedLabels: new Set(),
       query: null,
-      colorQuery: null
+      colorQuery: [{ "match_all": {} }]
     };
   }
 
   setAppstateQuery = (newQuery) => {
     this.setState({ query: newQuery })
+  }
+
+  setColorQuery = (newquerry) => {
+    this.setState({ colorQuery: newquerry })
   }
 
   textFieldQuery = (value) => {
@@ -112,9 +107,8 @@ class App extends Component {
             "path": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors",
             "query": {
               "bool": {
-                "must": [
-                  { "match": { "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.h": 0 } }
-                ]
+                "must":
+                  this.state.colorQuery
               }
             }
           }
@@ -171,7 +165,7 @@ class App extends Component {
               defaultQuery={this.labelDefaultQuery}
               URLParams={true}
               react={{
-                and: ["textSearch"]
+                and: ["textSearch", "ColorAnnotation"]
               }}
             >
               <LabelAnnotationList
@@ -185,7 +179,7 @@ class App extends Component {
             size={20}
             pagination={true}
             react={{
-              and: ["textSearch", "LabelAnnotation"]
+              and: ["textSearch", "LabelAnnotation", "ColorAnnotation"]
             }}
             onData={(res) => {
               return {
@@ -199,21 +193,19 @@ class App extends Component {
               textAlign: "center"
             }}
           />
-
           <div style={{ display: "flex", flexDirection: "column", width: "15%" }}>
-
             <ReactiveComponent
               componentId="ColorAnnotation"
               defaultQuery={this.ColorDefaultQuery}
+              react={{
+                and: ["textSearch", "LabelAnnotation"]
+              }}
             >
-              <ColorPicker />
+              <ColorPicker
+                setColorQuery={this.setColorQuery}
+              />
             </ReactiveComponent>
-
-
-
-
           </div>
-
         </div>
       </ReactiveBase>
     );
