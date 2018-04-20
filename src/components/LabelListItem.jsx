@@ -20,6 +20,7 @@ class LabelListItem extends Component {
     handleItemChange(label);
   }
 
+  // TODO this style needs fixing its both inline and App.css
   render() {
     const { label, count, initialState } = this.props;
     const { checked } = this.state;

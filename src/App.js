@@ -3,6 +3,8 @@ import React, { Component } from 'react';
 import LabelAnnotationList from './components/LabelAnnotationList'
 import ColorPicker from './components/ColorPicker'
 import { labelAnnotationListDefaultQuery } from './queries/LabelAnnotationListQueries'
+import { colorPickerDefaultQuery } from './queries/ColorPickerQueries'
+import { textFieldQuery } from './queries/TextFieldQueries'
 
 import {
   ReactiveBase,
@@ -17,87 +19,19 @@ class App extends Component {
     super(props);
     this.state = {
       selectedLabels: new Set(),
-      query: null,
+      labelsQuery: null,
       colorQuery: [{ "match_all": {} }]
     };
   }
 
+  // setAppLabelsQuery
   setAppstateQuery = (newQuery) => {
-    this.setState({ query: newQuery })
+    this.setState({ labelsQuery: newQuery })
   }
 
+  // fix set setAppColorQuery
   setColorQuery = (newquerry) => {
     this.setState({ colorQuery: newquerry })
-  }
-
-  textFieldQuery = (value) => {
-    if (value === "") {
-      return (
-        {
-          "query": {
-            "match_all": {}
-          }
-        }
-      );
-    }
-    else {
-      return (
-        {
-          "query": {
-            "multi_match": {
-              "fields": ["description", "tag"],
-              "query": value,
-              "type": "most_fields",
-              "fuzziness": "AUTO"
-            }
-          }
-        }
-      );
-    }
-  }
-
-  ColorDefaultQuery = (value, props) => {
-
-    return (
-
-      {
-        "query": {
-          "nested": {
-            "path": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors",
-            "query": {
-              "bool": {
-                "must":
-                  this.state.colorQuery
-              }
-            }
-          }
-        },
-        "size": 10000,
-        "aggs": {
-          "colors": {
-            "nested": {
-              "path": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors"
-            },
-            "aggs": {
-              "h": {
-                "terms": {
-                  "field": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.h"
-
-                },
-                "aggs": {
-                  "s": {
-                    "terms": {
-                      "field": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.s"
-
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    )
   }
 
   render() {
@@ -117,12 +51,12 @@ class App extends Component {
               dataField=""
               showFilter={true}
               URLParams={true}
-              customQuery={this.textFieldQuery}
+              customQuery={textFieldQuery}
             />
 
             <ReactiveComponent
               componentId="labelAnnotationList"
-              defaultQuery={() => labelAnnotationListDefaultQuery(this.state.query)}
+              defaultQuery={() => labelAnnotationListDefaultQuery(this.state.labelsQuery)}
               react={{
                 and: ["textSearch", "RectiveHistoslider", "ColorAnnotation"]
               }}
@@ -161,13 +95,13 @@ class App extends Component {
             }}
           />
 
-          <div style={{ display: "flex", flexDirection: "column", width: "15%" }}>
+          <div style={{ display: "flex", flexDirection: "column", maxWidth: "350px", minWidth: "350px" }}>
 
             <ReactiveComponent
               componentId="ColorAnnotation"
-              defaultQuery={this.ColorDefaultQuery}
+              defaultQuery={() => colorPickerDefaultQuery(this.state.colorQuery)}
               react={{
-                and: ["textSearch", "LabelAnnotation"]
+                and: ["textSearch", "labelAnnotationList"]
               }}
             >
 

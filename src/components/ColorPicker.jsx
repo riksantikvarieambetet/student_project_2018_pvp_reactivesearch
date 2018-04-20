@@ -7,6 +7,9 @@ class ColorPicker extends Component {
         this.state = {
             selectedColors: new Set(),
             colorTreshold: 10,
+            h_Treshold: 10,
+            s_Treshold: 10,
+            l_Treshold: 10,
             userCklicks: 0,
             hitstate: this.props.hits
         };
