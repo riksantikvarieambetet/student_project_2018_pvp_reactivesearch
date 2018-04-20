@@ -24,16 +24,17 @@ class LabelListItem extends Component {
     const { label, count, initialState } = this.props;
     const { checked } = this.state;
     return (
-      <div className="label-list-item" style={{ "marginLeft": "10px", "marginTop": "5px" }}>
+      <div className="label-list-item" style={{ "marginLeft": "40px", "marginTop": "2px", "marginBottom": "2px", "width": "310px" }}>
         <label className="container">
-          {label + "    "}
-          {count}
           <input
             type="checkbox"
             value={label}
             checked={checked}
             onChange={this.toggleItemChange}
           />
+          <span>{label}</span>
+          <span style={{ "float": "right", "marginRight": "40px" }}> {count} </span>
+
           <span className="checkmark"></span>
         </label>
       </div>
