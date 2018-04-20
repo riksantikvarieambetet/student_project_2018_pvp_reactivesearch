@@ -8,9 +8,6 @@ class LabelListItem extends Component {
     this.state = {
       checked: props.initialState
     };
-    if (this.props.initialState) {
-      console.log("label " + this.props.label + " " + this.props.initialState)
-    }
   }
 
   toggleItemChange = () => {
@@ -37,7 +34,7 @@ class LabelListItem extends Component {
             checked={checked}
             onChange={this.toggleItemChange}
           />
-          <span class="checkmark"></span>
+          <span className="checkmark"></span>
         </label>
       </div>
     );

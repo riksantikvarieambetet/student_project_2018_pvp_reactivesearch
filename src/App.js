@@ -1,6 +1,8 @@
 import './App.css';
 import React, { Component } from 'react';
-import LabelAnnotationList, { labelAnnotationListDefaultQuery } from './components/LabelAnnotationList'
+import LabelAnnotationList from './components/LabelAnnotationList'
+import { labelAnnotationListDefaultQuery } from './queries/LabelAnnotationListQueries'
+
 import {
   ReactiveBase,
   SingleList,
@@ -14,20 +16,6 @@ import {
   MultiList,
   ReactiveComponent
 } from '@appbaseio/reactivesearch';
-
-
-
-/* {
-  "query": {
-    "match_phrase_prefix": {
-      "description": {
-        "query": value,
-          "slop": 10,
-            "max_expansions": 50
-      }
-    }
-  }
-} */
 
 class App extends Component {
 

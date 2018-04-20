@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import Histoslider from 'histoslider';
+import { componentQuery } from './../queries/ReactiveHistosliderQueries'
+
 
 class ReactiveHistoslider extends Component {
 
@@ -7,13 +9,13 @@ class ReactiveHistoslider extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      value: [0, 100] // testing sliders
+      value: [0, 100]
     };
   }
 
   setValueRange = (newValue) => {
     if (!newValue) return;
-    if (newValue[0] > newValue[1]) {
+    if (newValue[0] >= newValue[1]) {
       let temp = newValue[0];
       newValue[0] = newValue[1];
       newValue[1] = temp + 5;
@@ -26,62 +28,12 @@ class ReactiveHistoslider extends Component {
   updateQuery = () => {
     let gte = this.state.value[0];
     let lte = this.state.value[1];
-    this.props.setQuery(
-      {
-        "query": {
-          "nested": {
-            "path": "googleVision.responses.labelAnnotations",
-            "query": {
-              "bool": {
-                "must": {
-                  "range": {
-                    "googleVision.responses.labelAnnotations.score": {
-                      "gte": gte,
-                      "lte": lte
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    );
-
-    /*  this.props.setQuery(
-       {
-         "query": {
-           "bool": {
-             "must": query
-           }
-         }
-       }
-     ); */
+    let query = componentQuery({ gte: gte, lte: lte });
+    this.props.setQuery(query);
+    //this.props.setParentRangeValue(this.state.value); 
+    //the combined results of the queries are hard to predict.
+    // We should try to separate the diffrent purposes of the queries.
   }
-
-  /* 
-  
-        {
-        "query": {
-          "nested": {
-            "path": "googleVision.responses.labelAnnotations",
-            "query": {
-              "bool": {
-                "must": {
-                  "range": {
-                    "googleVision.responses.labelAnnotations.score": {
-                      "gte": gte,
-                      "lte": lte
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-
-  */
 
   render() {
     let histosliderData = [];

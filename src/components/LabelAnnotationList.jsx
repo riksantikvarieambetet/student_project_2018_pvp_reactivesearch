@@ -3,6 +3,13 @@ import ReactDOM from 'react-dom';
 import LabelListItem from './LabelListItem'
 import RectiveHistoslider from './ReactiveHistoslider'
 
+import { reactiveHistosliderDefaultQuery } from './../queries/ReactiveHistosliderQueries'
+import {
+  componentQuery,
+  partialComponentLabelsQuery,
+  partialComponentSansLabelsQuery
+} from './../queries/LabelAnnotationListQueries'
+
 
 import { ReactiveComponent, DataController } from '@appbaseio/reactivesearch';
 
@@ -22,163 +29,33 @@ class LabelAnnotationList extends Component {
     } else {
       this.state.selectedLabels.add(label);
     }
-    this.updateQueryState()
+    let newPartialQuery = this.buildPartialQuery()
+    this.props.setAppstateQuery(newPartialQuery)
+    this.updateComponentQuery(newPartialQuery)
   }
 
-  updateQueryState = () => {
-    //console.log('updating query state ' + Array.from(this.state.selectedLabels))
-    let newQuery = this.buildQuery()
-    this.props.setAppstateQuery(newQuery)
-    this.updateQuery(newQuery)
+  updateComponentQuery = (newPartialQuery) => {
+    let newComponentQuery = componentQuery({ musts: newPartialQuery, url: Array.from(this.state.selectedLabels) })
+    this.props.setQuery(newComponentQuery);
   }
 
-  updateQuery = (musts) => {
-    this.props.setQuery(
-      {
-        "query": {
-          "bool": {
-            "must": musts
-          }
-        },
-        value: Array.from(this.state.selectedLabels) // behövs endast för routing
-      }
-    );
-  }
-
-  buildQuery = () => {
-    console.log(Array.from(this.state.selectedLabels))
+  buildPartialQuery = () => {
     let labels = Array.from(this.state.selectedLabels)
+    let lte = this.state.value[1];
+    let gte = this.state.value[0];
     let queryMusts = [];
+
     labels.map((label) => {
-      // console.log("-------> " + this.state.value[0] + " " + this.state.value[1])
-      queryMusts.push(
-        {
-          "nested": {
-            "path": "googleVision.responses.labelAnnotations",
-            "query": {
-              "bool": {
-                "must": [
-                  { "term": { "googleVision.responses.labelAnnotations.description.keyword": label } },
-                  {
-                    "range": {
-                      "googleVision.responses.labelAnnotations.score": {
-                        "lte": this.state.value[1],
-                        "gte": this.state.value[0]
-                      }
-                    }
-                  }
-                ]
-              }
-            }
-          }
-        }
-      );
+      let LabelsQuery = partialComponentLabelsQuery({ gte: gte, lte: lte, label: label })
+      queryMusts.push(LabelsQuery);
     });
+
     if (queryMusts.length === 0) {
-      queryMusts.push(
-        {
-          "nested": {
-            "path": "googleVision.responses.labelAnnotations",
-            "query": {
-              "bool": {
-                "must": [
-                  {
-                    "range": {
-                      "googleVision.responses.labelAnnotations.score": {
-                        "lte": this.state.value[1],
-                        "gte": this.state.value[0]
-                      }
-                    }
-                  }
-                ]
-              }
-            }
-          }
-        }
-      )
+      let sansLabelsQuery = partialComponentSansLabelsQuery({ gte: gte, lte: lte })
+      queryMusts.push(sansLabelsQuery)
     }
+
     return queryMusts;
-  }
-  // obs kolla att keyword finns på alla label queries 
-  //Array.from(this.state.selectedLabels)
-  reactiveHistosliderDefaultQuery = () => {
-    let labels = Array.from(this.state.selectedLabels);
-    if (labels.length === 0) {
-      return (
-        {
-          "size": 0,
-          "aggs": {
-            "labelAnnotations": {
-              "nested": {
-                "path": "googleVision.responses.labelAnnotations"
-              },
-              "aggs": {
-                "score": {
-                  "histogram": {
-                    "field": "googleVision.responses.labelAnnotations.score",
-                    "interval": 5,
-                    "extended_bounds": {
-                      "min": 0,
-                      "max": 95
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      )
-    } else {
-      return (
-        {
-          "query": {
-            "nested": {
-              "path": "googleVision.responses.labelAnnotations",
-              "query": {
-                "bool": {
-                  "filter": [
-                    {
-                      "terms": {
-                        "googleVision.responses.labelAnnotations.description.keyword": labels
-                      }
-                    }
-                  ]
-                }
-              },
-              "inner_hits": {}
-            }
-          },
-          "aggs": {
-            "labelAnnotations": { // name of aggregated field 
-              "nested": {
-                "path": "googleVision.responses.labelAnnotations"
-              },
-              "aggs": {
-                "inner": {
-                  "filter": {
-                    "terms": {
-                      "googleVision.responses.labelAnnotations.description.keyword": labels
-                    }
-                  },
-                  "aggs": {
-                    "score": {
-                      "histogram": {
-                        "field": "googleVision.responses.labelAnnotations.score",
-                        "interval": 5,
-                        "extended_bounds": {
-                          "min": 0,
-                          "max": 95
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      )
-    }
   }
 
   createLabelListItems = (buckets) => {
@@ -199,7 +76,7 @@ class LabelAnnotationList extends Component {
         <div>
           <ReactiveComponent
             componentId="RectiveHistoslider"
-            defaultQuery={this.reactiveHistosliderDefaultQuery}
+            defaultQuery={() => reactiveHistosliderDefaultQuery({ labels: Array.from(this.state.selectedLabels) })}
             react={{
               and: ["textSearch"]
             }}
@@ -207,6 +84,7 @@ class LabelAnnotationList extends Component {
             <RectiveHistoslider
               setParentValueRange={(newScore) => { this.setState({ value: newScore }) }}
               parentBuildQuery={this.buildQuery}
+              setParentRangeValue={(newValue) => this.setState({ value: newValue })}
             />
           </ReactiveComponent>
           {this.createLabelListItems(this.props.aggregations.labels.labels.buckets)}
@@ -219,31 +97,3 @@ class LabelAnnotationList extends Component {
 
 export default LabelAnnotationList;
 
-export function labelAnnotationListDefaultQuery(query) {
-  return (
-    {
-      "query": {
-        "bool": {
-          "must": query
-        }
-      },
-      "size": 0,
-      "aggs": {
-        "labels": {
-          "nested": {
-            "path": "googleVision.responses.labelAnnotations"
-          },
-          "aggs": {
-            "labels": {
-              "terms": {
-                "field": "googleVision.responses.labelAnnotations.description.keyword",
-                "order": { "_count": "desc" },
-                "size": 100000
-              }
-            }
-          }
-        }
-      }
-    }
-  )
-}
