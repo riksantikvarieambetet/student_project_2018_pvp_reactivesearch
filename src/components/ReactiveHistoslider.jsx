@@ -50,12 +50,13 @@ class ReactiveHistoslider extends Component {
       return (
         <div
           onMouseUp={this.updateQuery}
+          style={{ "marginBottom": "40px" }}
         >
           <Histoslider
             style={{ margin: "auto" }}
             data={mappedHistosliderData}
             padding={20}
-            width={340}
+            width={290}
             height={120}
             selection={this.state.value}
             onChange={this.setValueRange}
