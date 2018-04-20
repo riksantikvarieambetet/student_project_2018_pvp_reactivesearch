@@ -23,7 +23,7 @@ curl -XGET 'localhost:9200/customer/external/1?pretty'
 --Specificerar vi inte ett ID används POST istället för PUT
 
 --Kör inmatning från fil(lägg filen i 'bin'):
-curl -XPOST 'ul-aomlab01.testraa.se:8080/images/googleVision/_bulk?pretty' --data-binary "@/home/affe/projects/pvp_reactivesearch/ElasticsearshConfigs/data3.json" -H 'Content-Type: application/json'
+curl -XPOST 'localhost:9200/images/googleVision/_bulk?pretty' --data-binary "@/home/affe/projects/pvp_fetch/jsonFiles/data3.json" -H 'Content-Type: application/json'
 
 --hitta alla object i collection:
 $ curl -XPOST 'ul-aomlab01.testraa.se:8080/images/_search?pretty' -d '

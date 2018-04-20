@@ -1,4 +1,4 @@
-curl -XPUT 'ul-aomlab01.testraa.se:8080/images?pretty' -H 'Content-Type: application/json' -d'
+curl -XPUT 'localhost:9200/images?pretty' -H 'Content-Type: application/json' -d'
 {
   "mappings": {
     "googleVision": {
