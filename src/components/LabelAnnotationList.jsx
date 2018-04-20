@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 import LabelListItem from './LabelListItem'
 import RectiveHistoslider from './ReactiveHistoslider'
 

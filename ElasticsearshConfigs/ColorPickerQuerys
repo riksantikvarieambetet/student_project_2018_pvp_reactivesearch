@@ -1,0 +1,203 @@
+curl -XGET 'http: //ul-aomlab01.testraa.se:8080/_search?pretty' -H 'Content-Type: application/json' -d'  {
+    "size": 0,
+    "aggs": {
+        "colors": {
+            "nested": {
+                "path": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors"
+            },
+            "aggs": {
+                "hue": {
+                    "terms": {
+                        "field": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color"
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+
+
+curl -XGET 'http://ul-aomlab01.testraa.se:8080/_search?pretty' -H 'Content-Type: application/json' -d'  {
+
+{
+    "size" : 0,
+    "aggs": {
+      "comments": {
+        "nested": { 
+          "path": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color"
+        },
+        "aggs": {
+          "age_group": {
+            "histogram": { 
+              "field":    "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.h",
+              "interval": 10
+            },
+            "aggs": {
+              "blogposts": {
+                "reverse_nested": {}, 
+                "aggs": {
+                  "tags": {
+                    "terms": { 
+                      "field": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.s"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+
+
+curl -XGET 'http://ul-aomlab01.testraa.se:8080/_search?pretty' -H 'Content-Type: application/json' -d' 
+{
+    "query": {
+        "path": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color"
+    }
+}
+
+
+curl -XGET 'http: //ul-aomlab01.testraa.se:8080/_search?pretty' -H 'Content-Type: application/json' -d' { "query": { "match_all": {}
+},
+"aggs": {
+"colors": {
+    "filter": {
+        "term": {
+            "gender": "Male"
+        }
+    },
+    "aggs": {
+        "color_red": {
+            "terms": {
+                "field": "age_range"
+            }
+        }
+    }
+},
+"colors": {
+    "filter": {
+        "term": {
+            "gender": "Female"
+        }
+    },
+    "aggs": {
+        "color_blue": {
+            "terms": {
+                "field": "age_range"
+            }
+        }
+    }
+}
+}
+}'
+
+{
+"aggs": {
+"hue": {
+    "terms": {
+        "field": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.h"
+    },
+    "aggs": {
+        "saturation": {
+            "terms": {
+                "field": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.s"
+            },
+            "aggs": {
+                "lightness": {
+                    "terms": {
+                        "field": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.l"
+                    }
+                }
+            }
+        }
+    }
+}
+}
+}
+
+curl -XGET 'http://ul-aomlab01.testraa.se:8080/_search?pretty' -H 'Content-Type: application/json' -d'
+  {
+        "query": {
+          "nested": {
+            "path": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors",
+            "query": {
+              "bool": {
+                "must": [
+                  {"range": { "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.h": {gte: 35, lte: 65}}},
+                  {"range": { "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.s": {gte: 33, lte: 63}}},
+                  {"range": { "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.l": {gte: 56, lte: 76}}} 
+                ]
+              }
+            }
+          }
+        },
+        "size": 10000,
+        "aggs": {
+          "colors": {
+            "nested": {
+              "path": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors"
+            },
+            "aggs": {
+              "h": {
+                "terms": {
+                  "field": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.h"
+
+                },
+                "aggs": {
+                  "s": {
+                    "terms": {
+                      "field": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.s"
+
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+'
+curl -XGET 'http://ul-aomlab01.testraa.se:8080/_search?pretty' -H 'Content-Type: application/json' -d'
+      {
+        "query": {
+          "nested": {
+            "path": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors",
+            "query": {
+              "bool": {
+                "must": [
+                  { "match_all": {} }
+                ]
+              }
+            }
+          }
+        },
+        "size": 10000,
+        "aggs": {
+          "colors": {
+            "nested": {
+              "path": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors"
+            },
+            "aggs": {
+              "h": {
+                "terms": {
+                  "field": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.h"
+
+                },
+                "aggs": {
+                "s": {
+                "terms": {
+                  "field": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.s"
+                }
+              }
+            }
+          }
+        }
+      }        
+    }
+}
+'

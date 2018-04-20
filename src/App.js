@@ -1,19 +1,13 @@
 import './App.css';
 import React, { Component } from 'react';
 import LabelAnnotationList from './components/LabelAnnotationList'
+import ColorPicker from './components/ColorPicker'
 import { labelAnnotationListDefaultQuery } from './queries/LabelAnnotationListQueries'
 
 import {
   ReactiveBase,
-  SingleList,
-  CategorySearch,
-  SingleRange,
   ResultCard,
-  RangeSlider,
   TextField,
-  SelectedFilters,
-  DataSearch,
-  MultiList,
   ReactiveComponent
 } from '@appbaseio/reactivesearch';
 
@@ -22,12 +16,18 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      query: null
+      selectedLabels: new Set(),
+      query: null,
+      colorQuery: [{ "match_all": {} }]
     };
   }
 
   setAppstateQuery = (newQuery) => {
     this.setState({ query: newQuery })
+  }
+
+  setColorQuery = (newquerry) => {
+    this.setState({ colorQuery: newquerry })
   }
 
   textFieldQuery = (value) => {
@@ -56,13 +56,57 @@ class App extends Component {
     }
   }
 
+  ColorDefaultQuery = (value, props) => {
+
+    return (
+
+      {
+        "query": {
+          "nested": {
+            "path": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors",
+            "query": {
+              "bool": {
+                "must":
+                  this.state.colorQuery
+              }
+            }
+          }
+        },
+        "size": 10000,
+        "aggs": {
+          "colors": {
+            "nested": {
+              "path": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors"
+            },
+            "aggs": {
+              "h": {
+                "terms": {
+                  "field": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.h"
+
+                },
+                "aggs": {
+                  "s": {
+                    "terms": {
+                      "field": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.s"
+
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    )
+  }
+
   render() {
-    // googleVision.responses.labelAnnotations
     return (
       <ReactiveBase
         app="images"
-        url='http://localhost:9200/'>
+        url='http://ul-aomlab01.testraa.se:8080/'>
 
+        {/* url='http://localhost:9200/' */}
         <div style={{ display: "flex", flexDirection: "row" }}>
 
           <div style={{ display: "flex", flexDirection: "column", maxWidth: "350px", minWidth: "350px" }}>
@@ -75,25 +119,30 @@ class App extends Component {
               URLParams={true}
               customQuery={this.textFieldQuery}
             />
+
             <ReactiveComponent
               componentId="labelAnnotationList"
               defaultQuery={() => labelAnnotationListDefaultQuery(this.state.query)}
               react={{
-                and: ["textSearch", "RectiveHistoslider"]
+                and: ["textSearch", "RectiveHistoslider", "ColorAnnotation"]
               }}
             >
+
               <LabelAnnotationList
                 setAppstateQuery={this.setAppstateQuery}
               />
+
             </ReactiveComponent>
+
           </div>
+
           <ResultCard
             componentId="results"
             dataField="description"
             size={20}
             pagination={true}
             react={{
-              and: ["textSearch", "labelAnnotationList", "RectiveHistoslider"]
+              and: ["textSearch", "labelAnnotationList", "RectiveHistoslider", "ColorAnnotation"]
             }}
             onData={(res) => {
               /*  res.googleVision.responses["0"].labelAnnotations.map((item) => {
@@ -107,11 +156,31 @@ class App extends Component {
               }
             }}
             style={{
-              width: "60%",
+              width: "70%",
               textAlign: "center"
             }}
           />
+
+          <div style={{ display: "flex", flexDirection: "column", width: "15%" }}>
+
+            <ReactiveComponent
+              componentId="ColorAnnotation"
+              defaultQuery={this.ColorDefaultQuery}
+              react={{
+                and: ["textSearch", "LabelAnnotation"]
+              }}
+            >
+
+              <ColorPicker
+                setColorQuery={this.setColorQuery}
+              />
+
+            </ReactiveComponent>
+
+          </div>
+
         </div>
+
       </ReactiveBase>
     );
   }
