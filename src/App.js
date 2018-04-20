@@ -9,20 +9,6 @@ import {
   ReactiveComponent
 } from '@appbaseio/reactivesearch';
 
-
-
-/* {
-  "query": {
-    "match_phrase_prefix": {
-      "description": {
-        "query": value,
-          "slop": 10,
-            "max_expansions": 50
-      }
-    }
-  }
-} */
-
 class App extends Component {
 
   constructor(props) {
@@ -142,14 +128,13 @@ class App extends Component {
   }
 
   render() {
-    // googleVision.responses.labelAnnotations
     return (
       <ReactiveBase
         app="images"
         url='http://ul-aomlab01.testraa.se:8080/'>
 
+        {/* url='http://localhost:9200/' */}
         <div style={{ display: "flex", flexDirection: "row" }}>
-
           <div style={{ display: "flex", flexDirection: "column", width: "15%" }}>
 
             <TextField
@@ -160,6 +145,7 @@ class App extends Component {
               URLParams={true}
               customQuery={this.textFieldQuery}
             />
+
             <ReactiveComponent
               componentId="LabelAnnotation"
               defaultQuery={this.labelDefaultQuery}
@@ -168,11 +154,15 @@ class App extends Component {
                 and: ["textSearch", "ColorAnnotation"]
               }}
             >
+
               <LabelAnnotationList
                 setAppstateQuery={this.setAppstateQuery}
               />
+
             </ReactiveComponent>
+
           </div>
+
           <ResultCard
             componentId="results"
             dataField="description"
@@ -193,7 +183,9 @@ class App extends Component {
               textAlign: "center"
             }}
           />
+
           <div style={{ display: "flex", flexDirection: "column", width: "15%" }}>
+
             <ReactiveComponent
               componentId="ColorAnnotation"
               defaultQuery={this.ColorDefaultQuery}
@@ -201,12 +193,17 @@ class App extends Component {
                 and: ["textSearch", "LabelAnnotation"]
               }}
             >
+
               <ColorPicker
                 setColorQuery={this.setColorQuery}
               />
+
             </ReactiveComponent>
+
           </div>
+
         </div>
+
       </ReactiveBase>
     );
   }
