@@ -75,7 +75,11 @@ class LabelAnnotationList extends Component {
         <div>
           <ReactiveComponent
             componentId="RectiveHistoslider"
-            defaultQuery={() => reactiveHistosliderDefaultQuery({ labels: Array.from(this.state.selectedLabels) })}
+            defaultQuery={() => reactiveHistosliderDefaultQuery({
+              labels: Array.from(this.state.selectedLabels),
+              gte: this.state.value[0],
+              lte: this.state.value[1]
+            })}
             react={{
               and: ["textSearch"]
             }}

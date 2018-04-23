@@ -8,8 +8,8 @@ class ColorPicker extends Component {
             selectedColors: new Set(),
             colorTreshold: 10,
             h_Treshold: 10,
-            s_Treshold: 10,
-            l_Treshold: 10,
+            s_Treshold: 25,
+            l_Treshold: 15,
             userCklicks: 0,
             hitstate: this.props.hits
         };
@@ -41,9 +41,9 @@ class ColorPicker extends Component {
                         "query": {
                             "bool": {
                                 "must": [
-                                    { "range": { "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.h": { gte: values[0] - this.state.colorTreshold, lte: values[0] + this.state.colorTreshold } } },
-                                    { "range": { "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.s": { gte: values[1] - this.state.colorTreshold, lte: values[1] + this.state.colorTreshold } } },
-                                    { "range": { "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.l": { gte: values[2] - this.state.colorTreshold, lte: values[2] + this.state.colorTreshold } } }
+                                    { "range": { "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.h": { gte: values[0] - this.state.h_Treshold, lte: values[0] + this.state.h_Treshold } } },
+                                    { "range": { "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.s": { gte: values[1] - this.state.s_Treshold, lte: values[1] + this.state.s_Treshold } } },
+                                    { "range": { "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.l": { gte: values[2] - this.state.l_Treshold, lte: values[2] + this.state.l_Treshold } } }
                                 ]
                             }
                         }
@@ -92,10 +92,17 @@ class ColorPicker extends Component {
     }
 
     buildAvalibleColorGUI = (hits) => {
+        if (hits.length === 0) return;
+        /* 
+                for (i = 0; i < hits.length; i++) {
+                    text += hits[i] + "<br>";
+                }
+         */
+        let len = Array.from(this.state.selectedColors).length;
         return (hits.map((element, index) => {
-            let hue = element._source.googleVision.responses[0].imagePropertiesAnnotation.dominantColors.colors[0].color.h;
-            let saturation = element._source.googleVision.responses[0].imagePropertiesAnnotation.dominantColors.colors[0].color.s;
-            let lightness = element._source.googleVision.responses[0].imagePropertiesAnnotation.dominantColors.colors[0].color.l;
+            let hue = element._source.googleVision.responses[0].imagePropertiesAnnotation.dominantColors.colors[0 + len].color.h;
+            let saturation = element._source.googleVision.responses[0].imagePropertiesAnnotation.dominantColors.colors[0 + len].color.s;
+            let lightness = element._source.googleVision.responses[0].imagePropertiesAnnotation.dominantColors.colors[0 + len].color.l;
             return (
                 <div
                     onClick={() => {

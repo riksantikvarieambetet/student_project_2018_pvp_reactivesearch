@@ -2,13 +2,8 @@ export function colorPickerDefaultQuery(options) {
   return (
     {
       "query": {
-        "nested": {
-          "path": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors",
-          "query": {
-            "bool": {
-              "must": options.musts
-            }
-          }
+        "bool": {
+          "must": options.musts
         }
       },
       "size": 10000,

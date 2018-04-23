@@ -40,7 +40,7 @@ class App extends Component {
         app="images"
         url='http://ul-aomlab01.testraa.se:8080/'>
 
-        {/* url='http://localhost:9200/' */}
+        {/* url='http://localhost:9200/' : url='http://ul-aomlab01.testraa.se:8080/'*/}
         <div style={{ display: "flex", flexDirection: "row" }}>
 
           <div style={{ display: "flex", flexDirection: "column", maxWidth: "350px", minWidth: "350px" }}>
@@ -99,7 +99,7 @@ class App extends Component {
 
             <ReactiveComponent
               componentId="ColorAnnotation"
-              defaultQuery={() => colorPickerDefaultQuery(this.state.colorQuery)}
+              defaultQuery={() => colorPickerDefaultQuery({ musts: this.state.colorQuery })}
               react={{
                 and: ["textSearch", "labelAnnotationList"]
               }}

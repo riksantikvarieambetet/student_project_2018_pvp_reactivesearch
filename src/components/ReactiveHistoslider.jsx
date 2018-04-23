@@ -18,7 +18,7 @@ class ReactiveHistoslider extends Component {
     if (newValue[0] >= newValue[1]) {
       let temp = newValue[0];
       newValue[0] = newValue[1];
-      newValue[1] = temp + 5;
+      newValue[1] = temp + 4;
     }
     newValue[0] = Math.floor(newValue[0])
     newValue[1] = Math.floor(newValue[1])
