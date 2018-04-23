@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { ChromePicker } from 'react-color';
+import { componentQuery, partialComponentQuery } from './../queries/ColorPickerQueries'
 
 class ColorPicker extends Component {
 
@@ -7,7 +8,10 @@ class ColorPicker extends Component {
         super(props);
         this.state = {
             selectedColors: new Set(),
-            colorTreshold: 30,
+            colorTreshold: 10,
+            h_Treshold: 10,
+            s_Treshold: 25,
+            l_Treshold: 15,
             userCklicks: 0,
             hitstate: this.props.hits,
             currentColorPickerColor: { h: 0, s: 0, l: 0 }
@@ -24,48 +28,31 @@ class ColorPicker extends Component {
         }
 
         this.setState({ userCklicks: this.state.userCklicks + 1 })
-        let complete = this.mustBuilder();
-        this.updateQuery(complete);
+        let partialQueries = this.buildPartialQueries();
+        let query = componentQuery({ musts: partialQueries });
+        this.props.setQuery(query);
+        this.props.setDefaultQueryPartial(partialQueries)
 
     }
 
-    mustBuilder = () => {
-        let returnArray = [];
+    buildPartialQueries = () => {
+        let partialQueries = [];
         let colors = Array.from(this.state.selectedColors)
         colors.map((element) => {
             let values = element.split(";");
-            returnArray.push(
-                {
-                    "nested": {
-                        "path": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors",
-                        "query": {
-                            "bool": {
-                                "must": [
-                                    { "range": { "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.h": { gte: values[0] - this.state.colorTreshold, lte: values[0] + this.state.colorTreshold } } },
-                                    { "range": { "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.s": { gte: values[1] - this.state.colorTreshold, lte: values[1] + this.state.colorTreshold } } },
-                                    { "range": { "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.l": { gte: values[2] - this.state.colorTreshold, lte: values[2] + this.state.colorTreshold } } }
-                                ]
-                            }
-                        }
-                    }
-                }
-            )
+            let query = partialComponentQuery({
+                h: values[0],
+                s: values[1],
+                l: values[2],
+                h_Treshold: this.state.h_Treshold,
+                s_Treshold: this.state.s_Treshold,
+                l_Treshold: this.state.l_Treshold
+            });
+
+            partialQueries.push(query)
         }
         )
-        return returnArray;
-    }
-
-    updateQuery = (musts) => {
-        this.props.setQuery(
-            {
-                "query": {
-                    "bool": {
-                        "must": musts
-                    }
-                }
-            }
-        );
-        this.props.setColorQuery(musts)
+        return partialQueries;
     }
 
     buildSelectedColorGUI = () => {
@@ -92,37 +79,34 @@ class ColorPicker extends Component {
     }
 
     buildAvalibleColorGUI = (hits) => {
-
-        /*         let hue = element._source.googleVision.responses[0].imagePropertiesAnnotation.dominantColors.colors[0].color.h;
-                let saturation = element._source.googleVision.responses[0].imagePropertiesAnnotation.dominantColors.colors[0].color.s;
-                let lightness = element._source.googleVision.responses[0].imagePropertiesAnnotation.dominantColors.colors[0].color.l; */
-
+        if (hits.length === 0) return;
+        /* 
+                for (i = 0; i < hits.length; i++) {
+                    text += hits[i] + "<br>";
+                }
+         */
+        let len = Array.from(this.state.selectedColors).length;
         return (hits.map((element, index) => {
-            return (element._source.googleVision.responses[0].imagePropertiesAnnotation.dominantColors.colors.map((color, index) => {
-                let hue = color.color.h;
-                let saturation = color.color.s;
-                let lightness = color.color.l;
-
-                return (
-                    <div
-                        onClick={() => {
-                            this.setSelectedColors(hue, saturation, lightness);
-                        }}
-                        style={{
-                            backgroundColor: "hsl(" + hue + ", " + saturation + "%, " + lightness + "%)",
-                            width: "30px",
-                            height: "30px",
-                            margin: "5px",
-                            borderRadius: "100%",
-                            boxShadow: "0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19"
-                        }}
-                        key={index}>
-                    </div>
-                )
-            }))
-        }
-        )
-        )
+            let hue = element._source.googleVision.responses[0].imagePropertiesAnnotation.dominantColors.colors[0 + len].color.h;
+            let saturation = element._source.googleVision.responses[0].imagePropertiesAnnotation.dominantColors.colors[0 + len].color.s;
+            let lightness = element._source.googleVision.responses[0].imagePropertiesAnnotation.dominantColors.colors[0 + len].color.l;
+            return (
+                <div
+                    onClick={() => {
+                        this.setSelectedColors(hue, saturation, lightness);
+                    }}
+                    style={{
+                        backgroundColor: "hsl(" + hue + ", " + saturation + "%, " + lightness + "%)",
+                        width: "30px",
+                        height: "30px",
+                        margin: "5px",
+                        borderRadius: "100%",
+                        boxShadow: "0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19"
+                    }}
+                    key={index}>
+                </div>
+            )
+        }))
     }
 
     handleChangeComplete = (color) => {

@@ -186,7 +186,6 @@ curl -XGET 'localhost:9200/_search?pretty' -H 'Content-Type: application/json' -
     }
 }
 
-<<<<<<< HEAD
 curl -XGET 'localhost:9200/_search?pretty' -H 'Content-Type: application/json' -d'
 {
   "size": 0,
@@ -351,23 +350,3 @@ curl -XGET 'localhost:9200/_search?pretty' -H 'Content-Type: application/json' -
     }
   }
       }' 
-=======
-curl -XGET 'ul-aomlab01.testraa.se:8080/_search?pretty' -H 'Content-Type: application/json' -d'
-      {
-        "size": 0,
-        "aggs": {
-          "colors": {
-            "nested": {
-              "path": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors"
-            },
-            "aggs": {
-              "hsl": {
-                "terms": {
-                  "field": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.h"
-                }
-              }
-            }    
-          }
-        }
-      }'
->>>>>>> 3c7ee92e9a2e4e0b9e55bd7492f86163707eb5cc

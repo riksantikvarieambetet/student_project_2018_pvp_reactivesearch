@@ -29,7 +29,7 @@ class LabelAnnotationList extends Component {
       this.state.selectedLabels.add(label);
     }
     let newPartialQuery = this.buildPartialQuery()
-    this.props.setAppstateQuery(newPartialQuery)
+    this.props.setDefaultQueryPartial(newPartialQuery)
     this.updateComponentQuery(newPartialQuery)
   }
 
@@ -44,15 +44,18 @@ class LabelAnnotationList extends Component {
     let gte = this.state.value[0];
     let queryMusts = [];
 
-    labels.map((label) => {
-      let LabelsQuery = partialComponentLabelsQuery({ gte: gte, lte: lte, label: label })
-      queryMusts.push(LabelsQuery);
-    });
-
     if (queryMusts.length === 0) {
       let sansLabelsQuery = partialComponentSansLabelsQuery({ gte: gte, lte: lte })
       queryMusts.push(sansLabelsQuery)
+    } else {
+      queryMusts = labels.map((label) => {
+        return partialComponentLabelsQuery({ gte: gte, lte: lte, label: label })
+      });
     }
+
+    queryMusts = labels.map((label) => {
+      return partialComponentLabelsQuery({ gte: gte, lte: lte, label: label })
+    });
 
     return queryMusts;
   }
@@ -75,7 +78,11 @@ class LabelAnnotationList extends Component {
         <div>
           <ReactiveComponent
             componentId="RectiveHistoslider"
-            defaultQuery={() => reactiveHistosliderDefaultQuery({ labels: Array.from(this.state.selectedLabels) })}
+            defaultQuery={() => reactiveHistosliderDefaultQuery({
+              labels: Array.from(this.state.selectedLabels),
+              gte: this.state.value[0],
+              lte: this.state.value[1]
+            })}
             react={{
               and: ["textSearch"]
             }}
@@ -83,7 +90,6 @@ class LabelAnnotationList extends Component {
             <RectiveHistoslider
               setParentValueRange={(newScore) => { this.setState({ value: newScore }) }}
               parentBuildQuery={this.buildQuery}
-              setParentRangeValue={(newValue) => this.setState({ value: newValue })}
             />
           </ReactiveComponent>
           {this.createLabelListItems(this.props.aggregations.labels.labels.buckets)}

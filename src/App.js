@@ -3,6 +3,8 @@ import React, { Component } from 'react';
 import LabelAnnotationList from './components/LabelAnnotationList'
 import ColorPicker from './components/ColorPicker'
 import { labelAnnotationListDefaultQuery } from './queries/LabelAnnotationListQueries'
+import { colorPickerDefaultQuery } from './queries/ColorPickerQueries'
+import { textFieldQuery } from './queries/TextFieldQueries'
 
 import {
   ReactiveBase,
@@ -16,88 +18,17 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedLabels: new Set(),
-      query: null,
-      colorQuery: [{ "match_all": {} }]
+      partialLabelQuery: null,
+      partialColorQuery: [{ "match_all": {} }]
     };
   }
 
   setAppstateQuery = (newQuery) => {
-    this.setState({ query: newQuery })
+    this.setState({ partialLabelQuery: newQuery })
   }
 
-  setColorQuery = (newquerry) => {
-    this.setState({ colorQuery: newquerry })
-  }
-
-  textFieldQuery = (value) => {
-    if (value === "") {
-      return (
-        {
-          "query": {
-            "match_all": {}
-          }
-        }
-      );
-    }
-    else {
-      return (
-        {
-          "query": {
-            "multi_match": {
-              "fields": ["description", "tag"],
-              "query": value,
-              "type": "most_fields",
-              "fuzziness": "AUTO"
-            }
-          }
-        }
-      );
-    }
-  }
-
-  ColorDefaultQuery = (value, props) => {
-
-    return (
-
-      {
-        "query": {
-          "nested": {
-            "path": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors",
-            "query": {
-              "bool": {
-                "must":
-                  this.state.colorQuery
-              }
-            }
-          }
-        },
-        "size": 10000,
-        "aggs": {
-          "colors": {
-            "nested": {
-              "path": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors"
-            },
-            "aggs": {
-              "h": {
-                "terms": {
-                  "field": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.h"
-
-                },
-                "aggs": {
-                  "s": {
-                    "terms": {
-                      "field": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.s"
-
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    )
+  setColorQuery = (newQuery) => {
+    this.setState({ partialColorQuery: newQuery })
   }
 
   render() {
@@ -106,7 +37,7 @@ class App extends Component {
         app="images"
         url='http://ul-aomlab01.testraa.se:8080/'>
 
-        {/* url='http://localhost:9200/' */}
+        {/* url='http://localhost:9200/' : url='http://ul-aomlab01.testraa.se:8080/'*/}
         <div style={{ display: "flex", flexDirection: "row" }}>
 
           <div style={{ display: "flex", flexDirection: "column", maxWidth: "350px", minWidth: "350px" }}>
@@ -117,19 +48,19 @@ class App extends Component {
               dataField=""
               showFilter={true}
               URLParams={true}
-              customQuery={this.textFieldQuery}
+              customQuery={textFieldQuery}
             />
 
             <ReactiveComponent
               componentId="labelAnnotationList"
-              defaultQuery={() => labelAnnotationListDefaultQuery(this.state.query)}
+              defaultQuery={() => labelAnnotationListDefaultQuery(this.state.partialLabelQuery)}
               react={{
                 and: ["textSearch", "RectiveHistoslider", "ColorAnnotation"]
               }}
             >
 
               <LabelAnnotationList
-                setAppstateQuery={this.setAppstateQuery}
+                setDefaultQueryPartial={this.setAppstateQuery}
               />
 
             </ReactiveComponent>
@@ -161,18 +92,18 @@ class App extends Component {
             }}
           />
 
-          <div style={{ display: "flex", flexDirection: "column", width: "15%" }}>
+          <div style={{ display: "flex", flexDirection: "column", maxWidth: "350px", minWidth: "350px" }}>
 
             <ReactiveComponent
               componentId="ColorAnnotation"
-              defaultQuery={this.ColorDefaultQuery}
+              defaultQuery={() => colorPickerDefaultQuery({ musts: this.state.partialColorQuery })}
               react={{
-                and: ["textSearch", "labelAnnotationList"]
+                and: ["textSearch", "labelAnnotationList", "RectiveHistoslider"]
               }}
             >
 
               <ColorPicker
-                setColorQuery={this.setColorQuery}
+                setDefaultQueryPartial={this.setColorQuery}
               />
 
             </ReactiveComponent>
