@@ -167,7 +167,7 @@ class App extends Component {
               componentId="ColorAnnotation"
               defaultQuery={this.ColorDefaultQuery}
               react={{
-                and: ["textSearch", "LabelAnnotation"]
+                and: ["textSearch", "labelAnnotationList"]
               }}
             >
 
