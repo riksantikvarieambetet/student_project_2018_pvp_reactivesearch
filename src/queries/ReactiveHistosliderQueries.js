@@ -1,4 +1,5 @@
 export function reactiveHistosliderDefaultQuery(options) {
+  console.log(options.labels)
   if (options.labels.length === 0) {
     return (
       {
@@ -12,7 +13,7 @@ export function reactiveHistosliderDefaultQuery(options) {
               "score": {
                 "histogram": {
                   "field": "googleVision.responses.labelAnnotations.score",
-                  "interval": 4,
+                  "interval": 5,
                   "extended_bounds": {
                     "min": 0,
                     "max": 95
@@ -37,14 +38,6 @@ export function reactiveHistosliderDefaultQuery(options) {
                     "terms": {
                       "googleVision.responses.labelAnnotations.description.keyword": options.labels
                     }
-                  },
-                  {
-                    "range": {
-                      "googleVision.responses.labelAnnotations.score": {
-                        "lte": options.lte,
-                        "gte": options.gte
-                      }
-                    }
                   }
                 ]
               }
@@ -68,7 +61,7 @@ export function reactiveHistosliderDefaultQuery(options) {
                   "score": {
                     "histogram": {
                       "field": "googleVision.responses.labelAnnotations.score",
-                      "interval": 4,
+                      "interval": 5,
                       "extended_bounds": {
                         "min": 0,
                         "max": 95

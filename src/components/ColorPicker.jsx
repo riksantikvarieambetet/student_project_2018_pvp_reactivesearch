@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { componentQuery, partialComponentQuery } from './../queries/ColorPickerQueries'
 
 class ColorPicker extends Component {
 
@@ -24,48 +25,31 @@ class ColorPicker extends Component {
         }
 
         this.setState({ userCklicks: this.state.userCklicks + 1 })
-        let complete = this.mustBuilder();
-        this.updateQuery(complete);
+        let partialQueries = this.buildPartialQueries();
+        let query = componentQuery({ musts: partialQueries });
+        this.props.setQuery(query);
+        this.props.setDefaultQueryPartial(partialQueries)
 
     }
 
-    mustBuilder = () => {
-        let returnArray = [];
+    buildPartialQueries = () => {
+        let partialQueries = [];
         let colors = Array.from(this.state.selectedColors)
         colors.map((element) => {
             let values = element.split(";");
-            returnArray.push(
-                {
-                    "nested": {
-                        "path": "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors",
-                        "query": {
-                            "bool": {
-                                "must": [
-                                    { "range": { "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.h": { gte: values[0] - this.state.h_Treshold, lte: values[0] + this.state.h_Treshold } } },
-                                    { "range": { "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.s": { gte: values[1] - this.state.s_Treshold, lte: values[1] + this.state.s_Treshold } } },
-                                    { "range": { "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.l": { gte: values[2] - this.state.l_Treshold, lte: values[2] + this.state.l_Treshold } } }
-                                ]
-                            }
-                        }
-                    }
-                }
-            )
+            let query = partialComponentQuery({
+                h: values[0],
+                s: values[1],
+                l: values[2],
+                h_Treshold: this.state.h_Treshold,
+                s_Treshold: this.state.s_Treshold,
+                l_Treshold: this.state.l_Treshold
+            });
+
+            partialQueries.push(query)
         }
         )
-        return returnArray;
-    }
-
-    updateQuery = (musts) => {
-        this.props.setQuery(
-            {
-                "query": {
-                    "bool": {
-                        "must": musts
-                    }
-                }
-            }
-        );
-        this.props.setColorQuery(musts)
+        return partialQueries;
     }
 
     buildSelectedColorGUI = () => {

@@ -18,20 +18,17 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedLabels: new Set(),
-      labelsQuery: null,
-      colorQuery: [{ "match_all": {} }]
+      partialLabelQuery: null,
+      partialColorQuery: [{ "match_all": {} }]
     };
   }
 
-  // setAppLabelsQuery
   setAppstateQuery = (newQuery) => {
-    this.setState({ labelsQuery: newQuery })
+    this.setState({ partialLabelQuery: newQuery })
   }
 
-  // fix set setAppColorQuery
-  setColorQuery = (newquerry) => {
-    this.setState({ colorQuery: newquerry })
+  setColorQuery = (newQuery) => {
+    this.setState({ partialColorQuery: newQuery })
   }
 
   render() {
@@ -56,14 +53,14 @@ class App extends Component {
 
             <ReactiveComponent
               componentId="labelAnnotationList"
-              defaultQuery={() => labelAnnotationListDefaultQuery(this.state.labelsQuery)}
+              defaultQuery={() => labelAnnotationListDefaultQuery(this.state.partialLabelQuery)}
               react={{
                 and: ["textSearch", "RectiveHistoslider", "ColorAnnotation"]
               }}
             >
 
               <LabelAnnotationList
-                setAppstateQuery={this.setAppstateQuery}
+                setDefaultQueryPartial={this.setAppstateQuery}
               />
 
             </ReactiveComponent>
@@ -99,14 +96,14 @@ class App extends Component {
 
             <ReactiveComponent
               componentId="ColorAnnotation"
-              defaultQuery={() => colorPickerDefaultQuery({ musts: this.state.colorQuery })}
+              defaultQuery={() => colorPickerDefaultQuery({ musts: this.state.partialColorQuery })}
               react={{
-                and: ["textSearch", "labelAnnotationList"]
+                and: ["textSearch", "labelAnnotationList", "RectiveHistoslider"]
               }}
             >
 
               <ColorPicker
-                setColorQuery={this.setColorQuery}
+                setDefaultQueryPartial={this.setColorQuery}
               />
 
             </ReactiveComponent>
