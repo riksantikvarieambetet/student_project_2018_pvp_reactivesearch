@@ -84,7 +84,7 @@ class LabelAnnotationList extends Component {
               lte: this.state.value[1]
             })}
             react={{
-              and: ["textSearch"]
+              and: ["textSearch", "labelAnnotationList"]
             }}
           >
             <RectiveHistoslider

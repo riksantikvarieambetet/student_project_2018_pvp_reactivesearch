@@ -44,7 +44,6 @@ class ReactiveHistoslider extends Component {
         : this.props.aggregations.labelAnnotations.score.buckets;
 
       mappedHistosliderData = histosliderData.map((item) => {
-        console.log(item.doc_count)
         return ({ x0: item.key, x: item.key + 5, y: item.doc_count })
       })
       //  console.log(this.props)

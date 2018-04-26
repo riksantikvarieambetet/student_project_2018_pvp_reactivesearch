@@ -13,7 +13,7 @@ class ColorPicker extends Component {
             s_Treshold: 25,
             l_Treshold: 15,
             userCklicks: 0,
-            hitstate: this.props.hits,
+            hitstate: this.props.hits, // TODO behövs detta ???
             currentColorPickerColor: { h: 0, s: 0, l: 0 }
         };
     }
@@ -27,7 +27,7 @@ class ColorPicker extends Component {
             this.state.selectedColors.add(colorValue)
         }
 
-        this.setState({ userCklicks: this.state.userCklicks + 1 })
+        // this.setState({ userCklicks: this.state.userCklicks + 1 })
         let partialQueries = this.buildPartialQueries();
         let query = componentQuery({ musts: partialQueries });
         this.props.setQuery(query);

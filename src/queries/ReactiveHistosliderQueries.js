@@ -1,5 +1,4 @@
 export function reactiveHistosliderDefaultQuery(options) {
-  console.log(options.labels)
   if (options.labels.length === 0) {
     return (
       {
