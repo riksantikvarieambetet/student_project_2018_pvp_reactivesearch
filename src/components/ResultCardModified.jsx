@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-
 import { getClassName } from '@appbaseio/reactivecore/lib/utils/helper';
 import types from '@appbaseio/reactivecore/lib/utils/types';
 import ReactiveList from '@appbaseio/reactivesearch/lib/components/result/ReactiveList';

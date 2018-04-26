@@ -22,10 +22,10 @@ class LabelListItem extends Component {
 
   // TODO this style needs fixing its both inline and App.css
   render() {
-    const { label, count, initialState } = this.props;
+    const { label, count } = this.props;
     const { checked } = this.state;
     return (
-      <div className="label-list-item" style={{ "marginLeft": "40px", "marginTop": "2px", "marginBottom": "2px", "width": "310px" }}>
+      <div className="label-list-item" style={{ "margin": "2px 0px 2px 0px", "width": "310px" }}>
         <label className="container">
           <input
             type="checkbox"
@@ -34,8 +34,7 @@ class LabelListItem extends Component {
             onChange={this.toggleItemChange}
           />
           <span>{label}</span>
-          <span style={{ "float": "right", "marginRight": "40px" }}> {count} </span>
-
+          {count ? <span style={{ "float": "right", "marginRight": "40px" }}> {count} </span> : null}
           <span className="checkmark"></span>
         </label>
       </div>

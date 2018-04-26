@@ -350,3 +350,33 @@ curl -XGET 'localhost:9200/_search?pretty' -H 'Content-Type: application/json' -
     }
   }
       }' 
+
+
+/// testar att hämta en range utan labels
+
+curl -XGET 'localhost:9200/_search?pretty' -H 'Content-Type: application/json' -d'
+    {
+      "query": {
+        "bool": {
+          "must_not":     {
+      "nested": {
+        "path": "googleVision.responses.labelAnnotations",
+        "query": {
+          "bool": {
+            "must_not": [
+              {
+                "range": {
+                  "googleVision.responses.labelAnnotations.score": {
+                    "lte": 50,
+                    "gte": 45
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+        }
+      }
+    }'

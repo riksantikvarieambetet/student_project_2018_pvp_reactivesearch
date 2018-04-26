@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Histoslider from 'histoslider';
-import { componentQuery } from './../queries/ReactiveHistosliderQueries'
+import { componentQuery, partialComponentQuery, componentSansLabelQuery } from './../queries/ReactiveHistosliderQueries'
 
 
 class ReactiveHistoslider extends Component {
@@ -28,11 +28,34 @@ class ReactiveHistoslider extends Component {
   updateQuery = () => {
     let gte = this.state.value[0];
     let lte = this.state.value[1];
-    let query = componentQuery({ gte: gte, lte: lte });
+    let labels = Array.from(this.props.selectedLabels)
+    let query;
+    if (labels.length === 0) {
+      console.log('building sans ' + gte + " " + lte)
+      query = componentSansLabelQuery({ gte: gte, lte: lte });
+    } else {
+      let partial = this.buildPartialQuery(labels);
+      query = componentQuery({ gte: gte, lte: lte, musts: partial });
+    }
+
     this.props.setQuery(query);
-    //this.props.setParentRangeValue(this.state.value);
+
+    // testar detta 
+    // this.props.setParentValueRange(this.state.value);
+    //this.props.parentBuildQuery();
     //the combined results of the queries are hard to predict.
     // We should try to separate the diffrent purposes of the queries.
+  }
+
+  buildPartialQuery = (labels) => {
+    let lte = this.state.value[1];
+    let gte = this.state.value[0];
+    let queryMusts = [];
+
+    queryMusts = labels.map((label) => {
+      return partialComponentQuery({ gte: gte, lte: lte, label: label })
+    });
+    return queryMusts;
   }
 
   render() {

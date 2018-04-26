@@ -77,7 +77,77 @@ export function reactiveHistosliderDefaultQuery(options) {
   }
 }
 
+// klipt från labels
 export function componentQuery(options) {
+  return (
+    {
+      "query": {
+        "bool": {
+          "must": options.musts
+        }
+      }
+    }
+  );
+}
+
+// klippt från labelanolist 
+export function partialComponentQuery(options) {
+  return (
+    {
+      "nested": {
+        "path": "googleVision.responses.labelAnnotations",
+        "query": {
+          "bool": {
+            "must": [
+              { "term": { "googleVision.responses.labelAnnotations.description.keyword": options.label } },
+              {
+                "range": {
+                  "googleVision.responses.labelAnnotations.score": {
+                    "lte": options.lte,
+                    "gte": options.gte
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  );
+}
+/// TODO fixa nycklarna för labels i modalen de är namn och ibland är de dubbla kör på index 
+export function componentSansLabelQuery(options) {
+  return (
+    {
+      "query": {
+        "bool": {
+          "must_not": {
+            "nested": {
+              "path": "googleVision.responses.labelAnnotations",
+              "query": {
+                "bool": {
+                  "must_not": [
+                    {
+                      "range": {
+                        "googleVision.responses.labelAnnotations.score": {
+                          "lte": options.lte,
+                          "gte": options.gte
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  );
+}
+
+/* 
+export function OLDcomponentQuery(options) {
   return (
     {
       "query": {
@@ -99,4 +169,4 @@ export function componentQuery(options) {
       }
     }
   );
-}
+} */

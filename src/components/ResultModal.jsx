@@ -1,54 +1,75 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import LabelListItem from './LabelListItem'
+
+//TODO länka till kringla via entityUri http://www.kringla.nu/kringla/objekt?referens= + raa/kmb/16000300032372
 
 class ResultModal extends Component {
+
+  createLabelListItems = (labels) => {
+    return (labels.map(item =>
+      <LabelListItem
+        key={item.description}
+        handleItemChange={(item) => console.log(item)}
+        label={item.description}
+        initialState={false}
+        count={item.score}
+      />
+    ));
+  }
+
   render() {
 
-    if (!this.props.show) {
-      console.log('returning from modal')
-      return null;
+    if (!this.props.modalFields) return;
+
+    let { description, service, image, organization, tag, context, googleVision } = this.props.modalFields
+    let labels = googleVision.responses[0].labelAnnotations;
+    console.dir(labels)
+    let highres, lowres;
+    let labelsstring = "";
+
+    for (let label of labels) {
+      labelsstring += " " + label.description;
     }
 
-    const backdropStyle = {
-      position: 'fixed',
-      top: 0,
-      bottom: 0,
-      left: 0,
-      right: 0,
-      backgroundColor: 'rgba(0,0,0,0.3)',
-      padding: 50,
-      Zindex: 1000
-    };
+    for (let src of image.src) {
+      if (src.type === 'highres') {
+        highres = src.content;
+        console.log(src.type)
+      } else if (src.type === 'lowres') {
+        console.log(src.type)
+        lowres = src.content;
+      }
+    }
 
-    const modalStyle = {
-      backgroundColor: '#fff',
-      borderRadius: 5,
-      maxWidth: 500,
-      minHeight: 300,
-      margin: '0 auto',
-      padding: 30
-    };
 
     return (
-      <div className="backdrop" style={backdropStyle} >
-        <div className="modal" style={modalStyle}>
-          {this.props.children}
+      <div style={{ display: "flex", flexDirection: "row", height: "800px" }}>
+        <div style={{ display: "flex", flexDirection: "column", maxWidth: "400px" }}>
+          <span><span style={{ minWidth: "100px" }}>Description:</span> {description ? description : "-"}</span>
+          <span><span style={{ minWidth: "100px" }}>organization:</span> {organization ? organization : "-"}</span>
+          <span><span style={{ minWidth: "100px" }}>Tags:</span>{tag ? tag.toString().replace(",", " ") : "-"}</span>
+          <span><span style={{ minWidth: "100px" }}>Service:</span>{service}</span>
+          <span><span style={{ minWidth: "100px" }}>Context name:</span>{context.nameLabel ? context.nameLabel : "-"}</span>
+          <span><span style={{ minWidth: "100px" }}>Context place:</span>{context.placeLabel ? context.placeLabel : "-"}</span>
+          <span><span style={{ minWidth: "100px" }}>Context time:</span>{context.timeLabel ? context.timeLabel : "-"}</span>
 
-          <div className="footer">
-            <button onClick={this.props.onClose}>
-              Close
-            </button>
-          </div>
-        </div >
-      </div >
-    );
+          {this.createLabelListItems(labels)}
+        </div>
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <img style={{ display: "block", maxWidth: "1000px", maxHeight: "750px", width: "auto", height: "auto" }} src={highres ? highres : lowres} />
+        </div>
+
+      </div>
+    )
+
   }
 }
-
+/* 
 ResultModal.propTypes = {
   onClose: PropTypes.func.isRequired,
   show: PropTypes.bool,
   children: PropTypes.node
-};
+}; */
 
 export default ResultModal;

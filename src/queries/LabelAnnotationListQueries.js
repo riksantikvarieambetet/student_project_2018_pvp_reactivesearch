@@ -88,3 +88,53 @@ export function partialComponentSansLabelsQuery(options) {
     }
   );
 }
+
+/* 
+export function partialComponentLabelsQuery(options) {
+  return (
+    {
+      "nested": {
+        "path": "googleVision.responses.labelAnnotations",
+        "query": {
+          "bool": {
+            "must": [
+              { "term": { "googleVision.responses.labelAnnotations.description.keyword": options.label } },
+              {
+                "range": {
+                  "googleVision.responses.labelAnnotations.score": {
+                    "lte": options.lte,
+                    "gte": options.gte
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  );
+}
+
+export function partialComponentSansLabelsQuery(options) {
+  return (
+    {
+      "nested": {
+        "path": "googleVision.responses.labelAnnotations",
+        "query": {
+          "bool": {
+            "must": [
+              {
+                "range": {
+                  "googleVision.responses.labelAnnotations.score": {
+                    "lte": options.lte,
+                    "gte": options.gte
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  );
+} */

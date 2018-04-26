@@ -28,12 +28,12 @@ class LabelAnnotationList extends Component {
     } else {
       this.state.selectedLabels.add(label);
     }
-    let newPartialQuery = this.buildPartialQuery()
-    this.props.setDefaultQueryPartial(newPartialQuery)
-    this.updateComponentQuery(newPartialQuery)
+    this.updateComponentQuery();
   }
 
-  updateComponentQuery = (newPartialQuery) => {
+  updateComponentQuery = () => {
+    let newPartialQuery = this.buildPartialQuery()
+    this.props.setDefaultQueryPartial(newPartialQuery)
     let newComponentQuery = componentQuery({ musts: newPartialQuery, url: Array.from(this.state.selectedLabels) })
     this.props.setQuery(newComponentQuery);
   }
@@ -88,11 +88,14 @@ class LabelAnnotationList extends Component {
             }}
           >
             <RectiveHistoslider
-              setParentValueRange={(newScore) => { this.setState({ value: newScore }) }}
-              parentBuildQuery={this.buildQuery}
+              //setParentValueRange={(newScore) => { this.setState({ value: newScore }) }}
+              //parentBuildQuery={this.updateComponentQuery}
+              selectedLabels={this.state.selectedLabels}
             />
           </ReactiveComponent>
-          {this.createLabelListItems(this.props.aggregations.labels.labels.buckets)}
+          <div style={{ "marginLeft": "40px" }}>
+            {this.createLabelListItems(this.props.aggregations.labels.labels.buckets)}
+          </div>
         </div>
       )
     }

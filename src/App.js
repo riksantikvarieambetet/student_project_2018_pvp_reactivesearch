@@ -39,7 +39,10 @@ class App extends Component {
   //MOdal methods
 
   openModal = (modalFields) => {
-    this.setState({ modalIsOpen: true, modalFields: modalFields });
+    this.setState({
+      modalIsOpen: true,
+      modalFields: modalFields
+    });
 
   }
 
@@ -52,50 +55,16 @@ class App extends Component {
     this.setState({ modalIsOpen: false });
   }
 
-  renderModal = () => {
-    if (!this.state.modalFields) return;
-    let { description, service, image, organization, tag, context } = this.state.modalFields
-    let highres, lowres;
-    for (let src of image.src) {
-      if (src.type === 'highres') {
-        highres = src.content;
-      } else if (src.type === 'lowres') {
-        console.log(src.type)
-        lowres = src.content;
-      }
-    }
-
-    return (
-      <div style={{ display: "flex", flexDirection: "row" }}>
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          <span><span style={{ minWidth: "100px" }}>Description:</span> {description ? description : "-"}</span>
-          <span><span style={{ minWidth: "100px" }}>organization:</span> {organization ? organization : "-"}</span>
-          <span><span style={{ minWidth: "100px" }}>Tags:</span>{tag ? tag.toString().replace(",", " ") : "-"}</span>
-          <span><span style={{ minWidth: "100px" }}>Service:</span>{service}</span>
-          <span><span style={{ minWidth: "100px" }}>Context name:</span>{context.nameLabel ? context.nameLabel : "-"}</span>
-          <span><span style={{ minWidth: "100px" }}>Context place:</span>{context.placeLabel ? context.placeLabel : "-"}</span>
-          <span><span style={{ minWidth: "100px" }}>Context time:</span>{context.timeLabel ? context.timeLabel : "-"}</span>
-        </div>
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          <img src={highres ? highres : lowres} />
-        </div>
-
-      </div>
-    )
-  }
-  /* 
-    "nameLabel": "Lundberg, Bengt A",
-    "placeLabel": "Län: Gotland, Kommun: Gotland, Landskap: Gotland, Socken: Visby",
-    "timeLabel": "2001-08-15 - 2001-08-15" */
-
   render() {
     return (
       <ReactiveBase
+        //app="test_data"
+        //url='http://localhost:9200/'
         app="images"
-        url='http://ul-aomlab01.testraa.se:8080/'>
+        url='http://localhost:9200/'
+      >
 
         {/* url='http://localhost:9200/' : url='http://ul-aomlab01.testraa.se:8080/'*/}
-        <button onClick={this.openModal}>Open Modal</button>
         <Modal
           isOpen={this.state.modalIsOpen}
           onAfterOpen={this.afterOpenModal}
@@ -111,9 +80,10 @@ class App extends Component {
               transform: 'translate(-50%, -50%)'
             }
           }}
-          contentLabel="Example Modal"
         >
-          {this.renderModal()}
+          <ResultModal
+            modalFields={this.state.modalFields}
+          />
 
         </Modal>
 
