@@ -116,17 +116,18 @@ export function partialComponentQuery(options) {
   );
 }
 /// TODO fixa nycklarna för labels i modalen de är namn och ibland är de dubbla kör på index 
+// TODO fixa range på default queryn!!!   
 export function componentSansLabelQuery(options) {
   return (
     {
       "query": {
         "bool": {
-          "must_not": {
+          "must": {
             "nested": {
               "path": "googleVision.responses.labelAnnotations",
               "query": {
                 "bool": {
-                  "must_not": [
+                  "must": [
                     {
                       "range": {
                         "googleVision.responses.labelAnnotations.score": {
