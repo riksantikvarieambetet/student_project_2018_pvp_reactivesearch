@@ -7,9 +7,9 @@ import LabelListItem from './LabelListItem'
 class ResultModal extends Component {
 
   createLabelListItems = (labels) => {
-    return (labels.map(item =>
+    return (labels.map((item, index) =>
       <LabelListItem
-        key={item.description}
+        key={index}
         handleItemChange={(item) => console.log(item)}
         label={item.description}
         initialState={false}
@@ -26,16 +26,12 @@ class ResultModal extends Component {
     let labels = googleVision.responses[0].labelAnnotations;
     console.dir(labels)
     let highres, lowres;
-    let labelsstring = "";
-
-    for (let label of labels) {
-      labelsstring += " " + label.description;
-    }
 
     for (let src of image.src) {
       if (src.type === 'highres') {
         highres = src.content;
         console.log(src.type)
+        break;
       } else if (src.type === 'lowres') {
         console.log(src.type)
         lowres = src.content;

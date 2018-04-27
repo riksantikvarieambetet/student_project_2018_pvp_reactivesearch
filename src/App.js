@@ -24,7 +24,9 @@ class App extends Component {
       partialLabelQuery: null,
       partialColorQuery: [{ "match_all": {} }],
       modalIsOpen: false,
-      modalFields: null
+      modalFields: null,
+      paginationSize: 20,
+      curentPage: 1
     };
   }
 
@@ -55,13 +57,22 @@ class App extends Component {
     this.setState({ modalIsOpen: false });
   }
 
+  handlePageChange = (page) => {
+    if (page !== this.state.curentPage) {
+      this.setState({ curentPage: page });
+      console.log('setting ' + page)
+    }
+    console.log(page)
+    //this.setState({ curentPage: page })
+  }
+
   render() {
     return (
       <ReactiveBase
         //app="test_data"
-        //url='http://localhost:9200/'
+        url='http://ul-aomlab01.testraa.se:8080/'
         app="images"
-        url='http://localhost:9200/'
+      //url='http://localhost:9200/'
       >
 
         {/* url='http://localhost:9200/' : url='http://ul-aomlab01.testraa.se:8080/'*/}
@@ -118,6 +129,7 @@ class App extends Component {
           </div>
 
           <ResultCardModified
+            onPageChange={(page) => this.handlePageChange(page)}
             componentId="results"
             dataField="description"
             size={20}
@@ -148,7 +160,12 @@ class App extends Component {
 
             <ReactiveComponent
               componentId="ColorAnnotation"
-              defaultQuery={() => colorPickerDefaultQuery({ musts: this.state.partialColorQuery })}
+              defaultQuery={() => colorPickerDefaultQuery({
+                musts: this.state.partialColorQuery,
+                paginationSize: this.state.paginationSize,
+                from: (this.state.curentPage - 1) * this.state.paginationSize
+              })}
+
               react={{
                 and: ["textSearch", "labelAnnotationList", "RectiveHistoslider"]
               }}

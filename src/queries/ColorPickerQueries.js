@@ -6,7 +6,8 @@ export function colorPickerDefaultQuery(options) {
           "must": options.musts
         }
       },
-      "size": 10000,
+      "size": options.paginationSize,
+      "from": options.from,
       "aggs": {
         "colors": {
           "nested": {
