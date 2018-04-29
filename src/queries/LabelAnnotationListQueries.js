@@ -1,23 +1,36 @@
-export function labelAnnotationListDefaultQuery(query) {
+export function labelAnnotationListDefaultQuery(options) {
+  console.log("defaultQuery Labels" + options.gte + " " + options.lte)
   return (
     {
       "query": {
         "bool": {
-          "must": query
+          "must": options.labels
         }
       },
       "size": 0,
       "aggs": {
-        "labels": {
+        "googleVision": {
           "nested": {
             "path": "googleVision.responses.labelAnnotations"
           },
           "aggs": {
-            "labels": {
-              "terms": {
-                "field": "googleVision.responses.labelAnnotations.description.keyword",
-                "order": { "_count": "desc" },
-                "size": 100000
+            "filterd": {
+              "filter": {
+                "range": {
+                  "googleVision.responses.labelAnnotations.score": {
+                    "lte": options.lte,
+                    "gte": options.gte
+                  }
+                }
+              },
+              "aggs": {
+                "labels": {
+                  "terms": {
+                    "field": "googleVision.responses.labelAnnotations.description.keyword",
+                    "order": { "_count": "desc" },
+                    "size": 100000
+                  }
+                }
               }
             }
           }

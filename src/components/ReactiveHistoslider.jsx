@@ -15,6 +15,7 @@ class ReactiveHistoslider extends Component {
 
   setValueRange = (newValue) => {
     if (!newValue) return;
+    // this prevents the sliderhandles from overextending their range (overlapping).
     if (newValue[0] >= newValue[1]) {
       let temp = newValue[0];
       newValue[0] = newValue[1];
@@ -41,7 +42,7 @@ class ReactiveHistoslider extends Component {
     this.props.setQuery(query);
 
     // testar detta 
-    // this.props.setParentValueRange(this.state.value);
+    this.props.setParentValueRange(this.state.value);
     //this.props.parentBuildQuery();
     //the combined results of the queries are hard to predict.
     // We should try to separate the diffrent purposes of the queries.

@@ -31,10 +31,23 @@ class LabelAnnotationList extends Component {
     this.updateComponentQuery();
   }
 
+  /// TODO remove 
+  /*   handleValueChange = (newValue ) => {
+      this.setState({value: newValue});
+    }
+   */
   updateComponentQuery = () => {
     let newPartialQuery = this.buildPartialQuery()
-    this.props.setDefaultQueryPartial(newPartialQuery)
-    let newComponentQuery = componentQuery({ musts: newPartialQuery, url: Array.from(this.state.selectedLabels) })
+    console.log('trying to read ' + this.state.value[0])
+    this.props.setDefaultQueryPartial({
+      labels: newPartialQuery,
+      lte: this.state.value[1],
+      gte: this.state.value[0]
+    })
+    let newComponentQuery = componentQuery({
+      musts: newPartialQuery,
+      url: Array.from(this.state.selectedLabels)
+    })
     this.props.setQuery(newComponentQuery);
   }
 
@@ -44,7 +57,7 @@ class LabelAnnotationList extends Component {
     let gte = this.state.value[0];
     let queryMusts = [];
 
-    if (queryMusts.length === 0) {
+    if (labels.length === 0) {
       let sansLabelsQuery = partialComponentSansLabelsQuery({ gte: gte, lte: lte })
       queryMusts.push(sansLabelsQuery)
     } else {
@@ -52,11 +65,6 @@ class LabelAnnotationList extends Component {
         return partialComponentLabelsQuery({ gte: gte, lte: lte, label: label })
       });
     }
-
-    queryMusts = labels.map((label) => {
-      return partialComponentLabelsQuery({ gte: gte, lte: lte, label: label })
-    });
-
     return queryMusts;
   }
 
@@ -73,6 +81,7 @@ class LabelAnnotationList extends Component {
   }
 
   render() {
+    console.dir(this.props.aggregations)
     if (this.props.aggregations) {
       return (
         <div>
@@ -88,13 +97,17 @@ class LabelAnnotationList extends Component {
             }}
           >
             <RectiveHistoslider
-              //setParentValueRange={(newScore) => { this.setState({ value: newScore }) }}
+              setParentValueRange={(newScore) => {
+                console.log('new score in labelslist' + newScore)
+                this.setState({ value: newScore })
+                // this.updateComponentQuery() // this is the fix for histing the values but it treigers rearenderib to krash
+              }}
               //parentBuildQuery={this.updateComponentQuery}
               selectedLabels={this.state.selectedLabels}
             />
           </ReactiveComponent>
           <div style={{ "marginLeft": "40px" }}>
-            {this.createLabelListItems(this.props.aggregations.labels.labels.buckets)}
+            {this.createLabelListItems(this.props.aggregations.googleVision.filterd.labels.buckets)}
           </div>
         </div>
       )

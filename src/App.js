@@ -21,7 +21,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      partialLabelQuery: null,
+      partialLabelQuery: { labels: [], gte: 0, lte: 100 },
       partialColorQuery: [{ "match_all": {} }],
       modalIsOpen: false,
       modalFields: null,
@@ -30,7 +30,7 @@ class App extends Component {
     };
   }
 
-  setAppstateQuery = (newQuery) => {
+  setLabelsQuery = (newQuery) => {
     this.setState({ partialLabelQuery: newQuery })
   }
 
@@ -70,9 +70,9 @@ class App extends Component {
     return (
       <ReactiveBase
         //app="test_data"
-        url='http://ul-aomlab01.testraa.se:8080/'
+        //url='http://ul-aomlab01.testraa.se:8080/'
         app="images"
-      //url='http://localhost:9200/'
+        url='http://localhost:9200/'
       >
 
         {/* url='http://localhost:9200/' : url='http://ul-aomlab01.testraa.se:8080/'*/}
@@ -121,7 +121,7 @@ class App extends Component {
             >
 
               <LabelAnnotationList
-                setDefaultQueryPartial={this.setAppstateQuery}
+                setDefaultQueryPartial={this.setLabelsQuery}
               />
 
             </ReactiveComponent>
@@ -132,7 +132,7 @@ class App extends Component {
             onPageChange={(page) => this.handlePageChange(page)}
             componentId="results"
             dataField="description"
-            size={20}
+            size={this.state.paginationSize}
             pagination={true}
             react={{
               and: ["textSearch", "labelAnnotationList", "RectiveHistoslider", "ColorAnnotation"]

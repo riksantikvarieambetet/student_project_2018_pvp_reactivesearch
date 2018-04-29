@@ -380,3 +380,59 @@ curl -XGET 'localhost:9200/_search?pretty' -H 'Content-Type: application/json' -
         }
       }
     }'
+
+/// ny aggrigation för labels 
+
+curl -XGET 'localhost:9200/_search?pretty' -H 'Content-Type: application/json' -d'
+    {
+      "query": {
+        "nested": {
+          "path": "googleVision.responses.labelAnnotations",
+          "query": {
+            "bool": {
+              "filter": [
+                {
+                  "terms": {
+                    "googleVision.responses.labelAnnotations.description.keyword": ["sky"]
+                  }
+                },
+                {
+                  "range": {
+                    "googleVision.responses.labelAnnotations.score": {
+                      "lte": 100,
+                      "gte": 90
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "inner_hits": {}
+        }
+      },
+      "aggs": {
+        "labels": { 
+          "nested": {
+            "path": "googleVision.responses.labelAnnotations"
+          },
+          "aggs": {
+            "inner": {
+              "filter": {
+                "terms": {
+                  "googleVision.responses.labelAnnotations.description.keyword": ["sky"]
+                }
+              },
+              "aggs": {
+                "labels": {
+                  "terms": {
+                    "field": "googleVision.responses.labelAnnotations.description.keyword",
+                    "order": { "_count": "desc" },
+                    "size": 100000
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }'
