@@ -19,7 +19,6 @@ class ColorPicker extends Component {
     }
 
     setSelectedColors = (h, s, l) => {
-        console.log(h, s, l)
         let colorValue = h + ";" + s + ";" + l;
         if (this.state.selectedColors.has(colorValue)) {
             this.state.selectedColors.delete(colorValue)

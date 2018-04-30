@@ -31,11 +31,6 @@ class LabelAnnotationList extends Component {
     this.updateComponentQuery();
   }
 
-  /// TODO remove 
-  /*   handleValueChange = (newValue ) => {
-      this.setState({value: newValue});
-    }
-   */
   updateComponentQuery = () => {
     let newPartialQuery = this.buildPartialQuery()
     console.log('trying to read ' + this.state.value[0])
@@ -88,22 +83,13 @@ class LabelAnnotationList extends Component {
           <ReactiveComponent
             componentId="RectiveHistoslider"
             defaultQuery={() => reactiveHistosliderDefaultQuery({
-              labels: Array.from(this.state.selectedLabels),
-              gte: this.state.value[0],
-              lte: this.state.value[1]
+              labels: Array.from(this.state.selectedLabels)
             })}
-            react={{
-              and: ["textSearch", "labelAnnotationList"]
-            }}
           >
             <RectiveHistoslider
-              setParentValueRange={(newScore) => {
-                console.log('new score in labelslist' + newScore)
-                this.setState({ value: newScore })
-                // this.updateComponentQuery() // this is the fix for histing the values but it treigers rearenderib to krash
-              }}
-              //parentBuildQuery={this.updateComponentQuery}
-              selectedLabels={this.state.selectedLabels}
+              setParentValueRange={(newScore) => { this.setState({ value: newScore }) }}
+              rangeValue={this.state.value}
+              updateQuery={this.updateComponentQuery}
             />
           </ReactiveComponent>
           <div style={{ "marginLeft": "40px" }}>
