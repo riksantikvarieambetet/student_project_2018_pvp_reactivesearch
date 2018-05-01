@@ -1,5 +1,4 @@
 export function labelAnnotationListDefaultQuery(options) {
-  console.log("defaultQuery Labels" + options.gte + " " + options.lte)
   return (
     {
       "query": {

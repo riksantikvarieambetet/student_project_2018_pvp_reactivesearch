@@ -60,10 +60,7 @@ class App extends Component {
   handlePageChange = (page) => {
     if (page !== this.state.curentPage) {
       this.setState({ curentPage: page });
-      console.log('setting ' + page)
     }
-    console.log(page)
-    //this.setState({ curentPage: page })
   }
 
   render() {
@@ -99,7 +96,6 @@ class App extends Component {
         </Modal>
 
         <div style={{ display: "flex", flexDirection: "row" }}>
-
 
           <div style={{ display: "flex", flexDirection: "column", maxWidth: "350px", minWidth: "350px" }}>
 

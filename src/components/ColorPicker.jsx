@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { ChromePicker } from 'react-color';
 import { componentQuery, partialComponentQuery } from './../queries/ColorPickerQueries'
+import ColorStrip from './ColorStrip'
 
 class ColorPicker extends Component {
 
@@ -13,7 +14,6 @@ class ColorPicker extends Component {
             s_Treshold: 25,
             l_Treshold: 15,
             userCklicks: 0,
-            hitstate: this.props.hits, // TODO behövs detta ???
             currentColorPickerColor: { h: 0, s: 0, l: 0 }
         };
     }
@@ -66,46 +66,30 @@ class ColorPicker extends Component {
                         height: "30px",
                         margin: "5px",
                         borderRadius: "100%",
+                        cursor: "pointer",
                         boxShadow: "0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19"
                     }}
                     onClick={() => this.setSelectedColors(values[0], values[1], values[2])}
                     key={index}>
                 </div>
             )
-        }
-        )
-        )
+        }))
     }
+
 
     buildAvalibleColorGUI = (hits) => {
         if (hits.length === 0) return;
-        /* 
-                for (i = 0; i < hits.length; i++) {
-                    text += hits[i] + "<br>";
+
+        return (
+            <div>
+                {
+                    hits.map((element, index) => {
+                        let colors = element._source.googleVision.responses[0].imagePropertiesAnnotation.dominantColors.colors;
+                        return (<ColorStrip key={index} colors={colors} colorstripWidth={100} setSelectedColors={this.setSelectedColors} />)
+                    })
                 }
-         */
-        let len = Array.from(this.state.selectedColors).length;
-        return (hits.map((element, index) => {
-            let hue = element._source.googleVision.responses[0].imagePropertiesAnnotation.dominantColors.colors[0 + len].color.h;
-            let saturation = element._source.googleVision.responses[0].imagePropertiesAnnotation.dominantColors.colors[0 + len].color.s;
-            let lightness = element._source.googleVision.responses[0].imagePropertiesAnnotation.dominantColors.colors[0 + len].color.l;
-            return (
-                <div
-                    onClick={() => {
-                        this.setSelectedColors(hue, saturation, lightness);
-                    }}
-                    style={{
-                        backgroundColor: "hsl(" + hue + ", " + saturation + "%, " + lightness + "%)",
-                        width: "30px",
-                        height: "30px",
-                        margin: "5px",
-                        borderRadius: "100%",
-                        boxShadow: "0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19"
-                    }}
-                    key={index}>
-                </div>
-            )
-        }))
+            </div>
+        )
     }
 
     handleChangeComplete = (color) => {

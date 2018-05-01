@@ -76,7 +76,6 @@ class LabelAnnotationList extends Component {
   }
 
   render() {
-    console.dir(this.props.aggregations)
     if (this.props.aggregations) {
       return (
         <div>
