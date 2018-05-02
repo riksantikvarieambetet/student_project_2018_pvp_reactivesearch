@@ -53,9 +53,9 @@ export function partialComponentQuery(options) {
         "query": {
           "bool": {
             "must": [
-              { "range": { "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.h": { "gte": options.h - options.h_Treshold, lte: options.h + options.h_Treshold } } },
-              { "range": { "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.s": { "gte": options.s - options.s_Treshold, lte: options.s + options.s_Treshold } } },
-              { "range": { "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.l": { "gte": options.l - options.l_Treshold, lte: options.l + options.l_Treshold } } }
+              { "range": { "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.h": { "gte": options.h - options.h_Threshold, lte: options.h + options.h_Threshold } } },
+              { "range": { "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.s": { "gte": options.s - options.s_Threshold, lte: options.s + options.s_Threshold } } },
+              { "range": { "googleVision.responses.imagePropertiesAnnotation.dominantColors.colors.color.l": { "gte": options.l - options.l_Threshold, lte: options.l + options.l_Threshold } } }
             ]
           }
         }

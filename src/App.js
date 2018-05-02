@@ -131,7 +131,7 @@ class App extends Component {
             size={this.state.paginationSize}
             pagination={true}
             react={{
-              and: ["textSearch", "labelAnnotationList", "RectiveHistoslider", "ColorAnnotation"]
+              and: ["textSearch", "labelAnnotationList", "ColorAnnotation"]
             }}
             onData={(res) => {
               /*  res.googleVision.responses["0"].labelAnnotations.map((item) => {

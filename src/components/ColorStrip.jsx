@@ -7,8 +7,7 @@ class ColorStrip extends Component {
     let hue = color.color.h
     let saturation = color.color.s
     let lightness = color.color.l
-    let score = color.score
-    console.log(widthUnit)
+    let pixelFraction = color.pixelFraction
     return (
       <div
         onClick={() => {
@@ -16,7 +15,7 @@ class ColorStrip extends Component {
         }}
         style={{
           backgroundColor: "hsl(" + hue + ", " + saturation + "%, " + lightness + "%)",
-          width: (score * widthUnit) + "px",
+          width: (pixelFraction * widthUnit) + "px",
           height: "30px",
         }}
         key={index}>
@@ -27,11 +26,11 @@ class ColorStrip extends Component {
 
   render() {
     let colorstripWidth = 300;
-    let scoreSum = 0;
+    let pixelFractionSum = 0;
     this.props.colors.forEach((color) => {
-      scoreSum += color.score
+      pixelFractionSum += color.pixelFraction
     })
-    let widthUnit = colorstripWidth / scoreSum;
+    let widthUnit = colorstripWidth / pixelFractionSum;
 
     return (
       <div style={{ display: "flex", flexDirection: "row", marginBottom: "10px", cursor: "pointer" }}>

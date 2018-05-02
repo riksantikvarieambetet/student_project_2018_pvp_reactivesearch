@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { ChromePicker } from 'react-color';
 import { componentQuery, partialComponentQuery } from './../queries/ColorPickerQueries'
 import ColorStrip from './ColorStrip'
+import HSLThresholdSliders from './HSLThresholdSliders'
 
 class ColorPicker extends Component {
 
@@ -9,12 +10,12 @@ class ColorPicker extends Component {
         super(props);
         this.state = {
             selectedColors: new Set(),
-            colorTreshold: 10,
-            h_Treshold: 10,
-            s_Treshold: 25,
-            l_Treshold: 15,
-            userCklicks: 0,
-            currentColorPickerColor: { h: 0, s: 0, l: 0 }
+            h_Threshold: 15,
+            s_Threshold: 25,
+            l_Threshold: 15,
+            currentColorPickerColor: { h: 0, s: 0, l: 0 },
+            test: 0
+
         };
     }
 
@@ -26,12 +27,14 @@ class ColorPicker extends Component {
             this.state.selectedColors.add(colorValue)
         }
 
-        // this.setState({ userCklicks: this.state.userCklicks + 1 })
+        this.updateComponentQuery()
+    }
+
+    updateComponentQuery = () => {
         let partialQueries = this.buildPartialQueries();
         let query = componentQuery({ musts: partialQueries });
         this.props.setQuery(query);
         this.props.setDefaultQueryPartial(partialQueries)
-
     }
 
     buildPartialQueries = () => {
@@ -43,9 +46,9 @@ class ColorPicker extends Component {
                 h: values[0],
                 s: values[1],
                 l: values[2],
-                h_Treshold: this.state.h_Treshold,
-                s_Treshold: this.state.s_Treshold,
-                l_Treshold: this.state.l_Treshold
+                h_Threshold: this.state.h_Threshold,
+                s_Threshold: this.state.s_Threshold,
+                l_Threshold: this.state.l_Threshold
             });
 
             partialQueries.push(query)
@@ -105,21 +108,46 @@ class ColorPicker extends Component {
 
     }
 
+    setHThreshold = (value) => {
+        console.log(value)
+        this.setState({ h_Threshold: value })
+        this.updateComponentQuery()
+    }
+
+    setSThreshold = (value) => {
+        console.log(value)
+        this.setState({ s_Threshold: value })
+        this.updateComponentQuery()
+    }
+
+    setLThreshold = (value) => {
+        console.log(value)
+        this.setState({ l_Threshold: value })
+        this.updateComponentQuery()
+    }
+
     render() {
         return (
             <div>
-                <div style={{ marginTop: "15px", display: "flex" }}>
-                    <ChromePicker
-                        color={this.state.currentColorPickerColor}
-                        onChangeComplete={this.handleChangeComplete}
-                        disableAlpha={true}
-                    />
+                <div style={{ marginTop: "15px", display: "flex", justifyContent: "center" }}>
+                    <div className="color-picker">
+                        <ChromePicker
+                            color={this.state.currentColorPickerColor}
+                            onChangeComplete={this.handleChangeComplete}
+                            disableAlpha={true}
+                        />
+                        <button className="button" onClick={this.handleClick}>ADD COLOR</button>
+                        <HSLThresholdSliders
+                            setH={this.setHThreshold}
+                            setS={this.setSThreshold}
+                            setL={this.setLThreshold}
+                        />
+                    </div>
                 </div>
-                <button onClick={this.handleClick}>Add</button>
-                <div style={{ display: "flex", flexWrap: "wrap", marginTop: "45px", width: "auto", paddingBottom: "15px", marginBottom: "0px" }}>
+                <div style={{ display: "flex", flexWrap: "wrap", marginTop: "45px", paddingBottom: "15px", marginBottom: "0px" }}>
                     {this.buildSelectedColorGUI()}
                 </div>
-                <div style={{ display: "flex", flexWrap: "wrap", marginTop: "45px", width: "auto", borderTop: "1px solid black", paddingTop: "15px", marginTop: "0px" }}>
+                <div style={{ display: "flex", marginTop: "45px", borderTop: "1px solid black", paddingTop: "15px", marginTop: "0px", justifyContent: "center" }}>
                     {this.buildAvalibleColorGUI(this.props.hits)}
                 </div>
             </div >

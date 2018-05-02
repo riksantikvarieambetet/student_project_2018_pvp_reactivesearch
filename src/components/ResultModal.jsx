@@ -27,6 +27,8 @@ class ResultModal extends Component {
     const labels = googleVision.responses[0].labelAnnotations;
     const colors = googleVision.responses[0].imagePropertiesAnnotation.dominantColors.colors;
     let highres, lowres;
+    console.log(entityUri)
+    let kringla = "http://www.kringla.nu/kringla/objekt?referens=" + entityUri.slice(25)
 
     for (let src of image.src) {
       if (src.type === 'highres') {
@@ -47,7 +49,7 @@ class ResultModal extends Component {
       { label: "Name:", text: context.nameLabel ? context.nameLabel : "-" },
       { label: "Place:", text: context.placeLabel ? context.placeLabel : "-" },
       { label: "Time:", text: context.timeLabel ? context.timeLabel : "-" },
-      { label: "Attribution:", text: context.timeLabel ? context.timeLabel : "-" }
+      { label: "Attribution:", text: <a href={kringla} target="_blank">Kringla.nu</a> }
 
     ]
 
@@ -58,7 +60,7 @@ class ResultModal extends Component {
           {
             ksamData.map((row) => {
               return (
-                <div style={{ display: "flex", flexDirection: "row", padding: "5px", fontSize: "14px" }}>
+                <div key={row.label} style={{ display: "flex", flexDirection: "row", padding: "5px", fontSize: "14px" }}>
                   <div style={{ width: "150px", fontWeight: "bold" }}>{row.label}</div>
                   <div style={{ width: "100%" }}>{row.text}</div>
                 </div>
