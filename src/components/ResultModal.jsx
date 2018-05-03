@@ -27,16 +27,13 @@ class ResultModal extends Component {
     const labels = googleVision.responses[0].labelAnnotations;
     const colors = googleVision.responses[0].imagePropertiesAnnotation.dominantColors.colors;
     let highres, lowres;
-    console.log(entityUri)
     let kringla = "http://www.kringla.nu/kringla/objekt?referens=" + entityUri.slice(25)
 
     for (let src of image.src) {
       if (src.type === 'highres') {
         highres = src.content;
-        console.log(src.type)
         break;
       } else if (src.type === 'lowres') {
-        console.log(src.type)
         lowres = src.content;
       }
     }
@@ -68,7 +65,7 @@ class ResultModal extends Component {
             })
           }
           <div style={{ padding: "5px" }}>
-            <ColorStrip key={"color"} colors={colors} colorstripWidth={100} setSelectedColors={this.setSelectedColors} />
+            <ColorStrip key={"color"} colors={colors} colorstripWidth={100} setSelectedColors={() => { console.log('not done') }} />
           </div>
           <div style={{ overflowY: "auto", padding: "5px" }}>
             {this.createLabelListItems(labels)}

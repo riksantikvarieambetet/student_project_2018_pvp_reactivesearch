@@ -66,10 +66,10 @@ class App extends Component {
   render() {
     return (
       <ReactiveBase
-        //app="test_data"
-        //url='http://ul-aomlab01.testraa.se:8080/'
-        app="images"
-        url='http://localhost:9200/'
+        app="test_data"
+        url='http://ul-aomlab01.testraa.se:8080/'
+      // app="images"
+      // url='http://localhost:9200/'
       >
 
         {/* url='http://localhost:9200/' : url='http://ul-aomlab01.testraa.se:8080/'*/}
@@ -134,12 +134,18 @@ class App extends Component {
               and: ["textSearch", "labelAnnotationList", "ColorAnnotation"]
             }}
             onData={(res) => {
-              /*  res.googleVision.responses["0"].labelAnnotations.map((item) => {
-                 if (item.description === "sky" && item.score > 60)
-                   console.dir(item.score)
-               }) */
+              let highres, lowres;
+
+              for (let src of res.image.src) {
+                if (src.type === 'highres') {
+                  highres = src.content;
+                  break;
+                } else if (src.type === 'lowres') {
+                  lowres = src.content;
+                }
+              }
               return {
-                image: res.image.src[0].content,
+                image: highres ? highres : lowres,
                 title: res.description,
                 description: res.tag,
                 modalData: res,

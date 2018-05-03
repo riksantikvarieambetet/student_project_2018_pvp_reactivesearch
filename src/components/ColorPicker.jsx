@@ -13,9 +13,7 @@ class ColorPicker extends Component {
             h_Threshold: 15,
             s_Threshold: 25,
             l_Threshold: 15,
-            currentColorPickerColor: { h: 0, s: 0, l: 0 },
-            test: 0
-
+            currentColorPickerColor: { h: 0, s: 0, l: 0 }
         };
     }
 
