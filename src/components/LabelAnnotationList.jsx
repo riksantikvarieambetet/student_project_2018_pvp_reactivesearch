@@ -18,7 +18,8 @@ class LabelAnnotationList extends Component {
     super(props);
     this.state = {
       selectedLabels: new Set(),
-      value: [0, 100]
+      confidenceRange: [0, 100],
+      size: 20
     };
   }
 
@@ -31,13 +32,14 @@ class LabelAnnotationList extends Component {
     this.updateComponentQuery();
   }
 
-  updateComponentQuery = () => {
+  updateComponentQuery = (newSize) => {
     let newPartialQuery = this.buildPartialQuery()
-    console.log('trying to read ' + this.state.value[0])
+    console.log(this.state.size + "building query")
     this.props.setDefaultQueryPartial({
       labels: newPartialQuery,
-      lte: this.state.value[1],
-      gte: this.state.value[0]
+      lte: this.state.confidenceRange[1],
+      gte: this.state.confidenceRange[0],
+      size: newSize
     })
     let newComponentQuery = componentQuery({
       musts: newPartialQuery,
@@ -48,8 +50,8 @@ class LabelAnnotationList extends Component {
 
   buildPartialQuery = () => {
     let labels = Array.from(this.state.selectedLabels)
-    let lte = this.state.value[1];
-    let gte = this.state.value[0];
+    let lte = this.state.confidenceRange[1];
+    let gte = this.state.confidenceRange[0];
     let queryMusts = [];
 
     if (labels.length === 0) {
@@ -75,8 +77,23 @@ class LabelAnnotationList extends Component {
     ));
   }
 
+  showMoreLabels = () => {
+    if (this.state.size > 1000000) return;
+    //console.log(this.state.size + "before")
+    let newSize = this.state.size * 2;
+    this.setState({ size: newSize })
+    // console.log(this.state.size + "after")
+    this.updateComponentQuery(newSize)
+  }
+
+  showLessLabels = () => {
+    this.setState({ size: 20 })
+    this.updateComponentQuery(20)
+  }
+
   render() {
     if (this.props.aggregations) {
+      console.log(this.props.aggregations.googleVision)
       return (
         <div>
           <ReactiveComponent
@@ -86,20 +103,40 @@ class LabelAnnotationList extends Component {
             })}
           >
             <RectiveHistoslider
-              setParentValueRange={(newScore) => { this.setState({ value: newScore }) }}
-              rangeValue={this.state.value}
+              setParentValueRange={(newScore) => { this.setState({ confidenceRange: newScore }) }}
+              rangeValue={this.state.confidenceRange}
               updateQuery={this.updateComponentQuery}
             />
           </ReactiveComponent>
-          <div style={{ "marginLeft": "40px" }}>
+
+          <h2 className="headings">Labels</h2>
+          <div style={{ margin: "40px 0px 0px 40px" }}>
             {this.createLabelListItems(this.props.aggregations.googleVision.filterd.labels.buckets)}
           </div>
-        </div>
+          {
+            this.props.aggregations.googleVision.filterd.labels.sum_other_doc_count > 0 ?
+              <div
+                className="headings"
+                style={{ margin: "5px 0px 0px 40px", cursor: "pointer", color: "blue" }}
+                onClick={this.showMoreLabels}
+              >
+                {this.state.size} show more
+              </div>
+              : null
+          }
+          {
+            this.state.size > 20 ?
+              <div className="headings" style={{ margin: "5px 0px 0px 40px", cursor: "pointer", color: "blue" }} onClick={this.showLessLabels}>reset</div>
+              : null
+          }
+        </div >
       )
     }
     return null;
   }
 }
+
+// style={{ marginLeft: "40px" }}
 
 export default LabelAnnotationList;
 

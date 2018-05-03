@@ -27,7 +27,7 @@ export function labelAnnotationListDefaultQuery(options) {
                   "terms": {
                     "field": "googleVision.responses.labelAnnotations.description.keyword",
                     "order": { "_count": "desc" },
-                    "size": 100000
+                    "size": options.size
                   }
                 }
               }

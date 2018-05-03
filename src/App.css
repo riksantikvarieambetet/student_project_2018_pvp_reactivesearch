@@ -1,3 +1,12 @@
+.headings {
+  margin: 40px 0px 5px 0px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 200;
+  color: grey;
+}
+
+
 
 /* Customize the label (the container) */
 .container {
@@ -123,3 +132,4 @@
     background: #4CAF50; /* Green background */
     cursor: pointer; /* Cursor on hover */
 }
+

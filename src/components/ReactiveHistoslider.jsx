@@ -37,6 +37,7 @@ class ReactiveHistoslider extends Component {
           onMouseUp={this.props.updateQuery}
           style={{ "marginBottom": "40px" }}
         >
+          <h2 className="headings">Label Confidence</h2>
           <Histoslider
             style={{ margin: "auto" }}
             data={mappedHistosliderData}

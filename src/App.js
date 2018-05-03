@@ -21,7 +21,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      partialLabelQuery: { labels: [], gte: 0, lte: 100 },
+      partialLabelQuery: { labels: [], gte: 0, lte: 100, size: 20 },
       partialColorQuery: [{ "match_all": {} }],
       modalIsOpen: false,
       modalFields: null,
@@ -66,10 +66,10 @@ class App extends Component {
   render() {
     return (
       <ReactiveBase
-        app="test_data"
-        url='http://ul-aomlab01.testraa.se:8080/'
-      // app="images"
-      // url='http://localhost:9200/'
+        // app="test_data"
+        // url='http://ul-aomlab01.testraa.se:8080/'
+        app="images"
+        url='http://localhost:9200/'
       >
 
         {/* url='http://localhost:9200/' : url='http://ul-aomlab01.testraa.se:8080/'*/}
@@ -101,7 +101,7 @@ class App extends Component {
 
             <TextField
               componentId="textSearch"
-              style={{ "padding": "10px" }}
+              style={{ "padding": "10px", margin: "42px 0px 0px 30px", width: "300px" }}
               dataField=""
               showFilter={true}
               URLParams={true}
@@ -135,7 +135,6 @@ class App extends Component {
             }}
             onData={(res) => {
               let highres, lowres;
-
               for (let src of res.image.src) {
                 if (src.type === 'highres') {
                   highres = src.content;
