@@ -33,8 +33,8 @@ class LabelAnnotationList extends Component {
   }
 
   updateComponentQuery = (newSize) => {
+    if (typeof newSize !== 'number') newSize = this.state.size;
     let newPartialQuery = this.buildPartialQuery()
-    console.log(this.state.size + "building query")
     this.props.setDefaultQueryPartial({
       labels: newPartialQuery,
       lte: this.state.confidenceRange[1],
@@ -93,7 +93,6 @@ class LabelAnnotationList extends Component {
 
   render() {
     if (this.props.aggregations) {
-      console.log(this.props.aggregations.googleVision)
       return (
         <div>
           <ReactiveComponent
@@ -120,7 +119,7 @@ class LabelAnnotationList extends Component {
                 style={{ margin: "5px 0px 0px 40px", cursor: "pointer", color: "blue" }}
                 onClick={this.showMoreLabels}
               >
-                {this.state.size} show more
+                show more
               </div>
               : null
           }

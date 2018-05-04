@@ -13,7 +13,7 @@ export function textFieldQuery(value) {
       {
         "query": {
           "multi_match": {
-            "fields": ["description", "tag"],
+            "fields": ["description", "tag", "organizationShort", "organization", "service", "itemLabel"],
             "query": value,
             "type": "most_fields",
             "fuzziness": "AUTO"

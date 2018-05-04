@@ -23,7 +23,7 @@ class ResultModal extends Component {
 
     if (!this.props.modalFields) return;
 
-    const { description, service, image, organization, tag, context, googleVision, entityUri } = this.props.modalFields
+    const { description, service, image, organization, tag, context, googleVision, entityUri, itemLabel } = this.props.modalFields
     const labels = googleVision.responses[0].labelAnnotations;
     const colors = googleVision.responses[0].imagePropertiesAnnotation.dominantColors.colors;
     let highres, lowres;
@@ -39,6 +39,7 @@ class ResultModal extends Component {
     }
 
     const ksamData = [
+      { label: "Item label:", text: itemLabel ? itemLabel : "-" },
       { label: "Description:", text: description ? description : "-" },
       { label: "Organization:", text: organization ? organization : "-", },
       { label: "Tags:", text: tag ? tag : "-", },
