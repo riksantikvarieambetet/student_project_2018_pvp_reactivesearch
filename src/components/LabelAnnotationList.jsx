@@ -100,6 +100,9 @@ class LabelAnnotationList extends Component {
             defaultQuery={() => reactiveHistosliderDefaultQuery({
               labels: Array.from(this.state.selectedLabels)
             })}
+            react={{
+              and: ["textSearch", "ColorAnnotation"]
+            }}
           >
             <RectiveHistoslider
               setParentValueRange={(newScore) => { this.setState({ confidenceRange: newScore }) }}

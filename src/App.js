@@ -66,10 +66,10 @@ class App extends Component {
   render() {
     return (
       <ReactiveBase
-        app="test_data"
-        url='http://ul-aomlab01.testraa.se:8080/'
-      // app="images"
-      // url='http://localhost:9200/'
+        //  app="test_data"
+        // url='http://ul-aomlab01.testraa.se:8080/'
+        app="images"
+        url='http://localhost:9200/'
       >
 
         {/* url='http://localhost:9200/' : url='http://ul-aomlab01.testraa.se:8080/'*/}
