@@ -23,9 +23,12 @@ class ResultModal extends Component {
 
     if (!this.props.modalFields) return;
 
+
     const { description, service, image, organization, tag, context, googleVision, entityUri, itemLabel } = this.props.modalFields
+    console.log(image)
     const labels = googleVision.responses[0].labelAnnotations;
     const colors = googleVision.responses[0].imagePropertiesAnnotation.dominantColors.colors;
+    let motive = image.motive;
     let highres, lowres;
     let kringla = "http://www.kringla.nu/kringla/objekt?referens=" + entityUri.slice(25)
 
@@ -41,6 +44,7 @@ class ResultModal extends Component {
     const ksamData = [
       { label: "Item label:", text: itemLabel ? itemLabel : "-" },
       { label: "Description:", text: description ? description : "-" },
+      { label: "Motive:", text: motive ? motive : "-" },
       { label: "Organization:", text: organization ? organization : "-", },
       { label: "Tags:", text: tag ? tag : "-", },
       { label: "Service:", text: service ? service : "-" },

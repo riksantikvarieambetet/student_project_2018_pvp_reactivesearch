@@ -68,7 +68,7 @@ class App extends Component {
       <ReactiveBase
         //  app="test_data"
         // url='http://ul-aomlab01.testraa.se:8080/'
-        app="images"
+        app="test_data"
         url='http://localhost:9200/'
       >
 

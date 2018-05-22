@@ -12,11 +12,17 @@ export function textFieldQuery(value) {
     return (
       {
         "query": {
-          "multi_match": {
-            "fields": ["description", "tag", "organizationShort", "organization", "service", "itemLabel"],
-            "query": value,
-            "type": "most_fields",
-            "fuzziness": "AUTO"
+          "bool": {
+            "should": [
+              {
+                "multi_match": {
+                  "fields": ["description", "tag", "organizationShort", "organization", "service", "itemLabel"],
+                  "query": value,
+                  "type": "most_fields",
+                  "fuzziness": "AUTO"
+                }
+              }
+            ]
           }
         }
       }

@@ -20,10 +20,11 @@ class LabelListItem extends Component {
     handleItemChange(label);
   }
 
-  // TODO this style needs fixing its both inline and App.css
+  // TODO this style needs a workover its both inline and App.css
   render() {
     const { label, count } = this.props;
     const { checked } = this.state;
+    console.log(label)
     return (
       <div className="label-list-item" style={{ "margin": "2px 0px 2px 0px", "width": "310px" }}>
         <label className="container">
