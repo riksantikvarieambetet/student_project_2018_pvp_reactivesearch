@@ -38,7 +38,7 @@ class ColorPicker extends Component {
     buildPartialQueries = () => {
         let partialQueries = [];
         let colors = Array.from(this.state.selectedColors)
-        colors.map((element) => {
+        colors.forEach((element) => {
             let values = element.split(";");
             let query = partialComponentQuery({
                 h: parseFloat(values[0]),
@@ -48,7 +48,6 @@ class ColorPicker extends Component {
                 s_Threshold: parseFloat(this.state.s_Threshold),
                 l_Threshold: parseFloat(this.state.l_Threshold)
             });
-            console.log(this.state.h_Threshold + " pushing query")
             partialQueries.push(query)
         }
         )
@@ -133,7 +132,7 @@ class ColorPicker extends Component {
                     {this.buildSelectedColorGUI()}
                 </div>
                 <h2 className="headings">Dominant Colors</h2>
-                <div style={{ display: "flex", marginTop: "45px", paddingTop: "15px", marginTop: "0px", justifyContent: "center" }}>
+                <div style={{ display: "flex", marginTop: "45px", paddingTop: "15px", justifyContent: "center" }}>
                     {this.buildAvalibleColorGUI(this.props.hits)}
                 </div>
             </div >

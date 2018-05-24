@@ -9,8 +9,7 @@ import {
   partialComponentSansLabelsQuery
 } from './../queries/LabelAnnotationListQueries'
 
-
-import { ReactiveComponent, DataController } from '@appbaseio/reactivesearch';
+import { ReactiveComponent } from '@appbaseio/reactivesearch';
 
 class LabelAnnotationList extends Component {
 
@@ -19,7 +18,7 @@ class LabelAnnotationList extends Component {
     this.state = {
       selectedLabels: new Set(),
       confidenceRange: [0, 100],
-      size: 20
+      lablesShown: 20
     };
   }
 
@@ -33,7 +32,7 @@ class LabelAnnotationList extends Component {
   }
 
   updateComponentQuery = (newSize) => {
-    if (typeof newSize !== 'number') newSize = this.state.size;
+    if (typeof newSize !== 'number') newSize = this.state.lablesShown;
     let newPartialQuery = this.buildPartialQuery()
     this.props.setDefaultQueryPartial({
       labels: newPartialQuery,
@@ -79,10 +78,8 @@ class LabelAnnotationList extends Component {
 
   showMoreLabels = () => {
     if (this.state.size > 1000000) return;
-    //console.log(this.state.size + "before")
-    let newSize = this.state.size * 2;
-    this.setState({ size: newSize })
-    // console.log(this.state.size + "after")
+    let newSize = this.state.lablesShown * 2;
+    this.setState({ lablesShown: newSize })
     this.updateComponentQuery(newSize)
   }
 
@@ -127,7 +124,7 @@ class LabelAnnotationList extends Component {
               : null
           }
           {
-            this.state.size > 20 ?
+            this.state.lablesShown > 20 ?
               <div className="headings" style={{ margin: "5px 0px 0px 40px", cursor: "pointer", color: "blue" }} onClick={this.showLessLabels}>reset</div>
               : null
           }
@@ -137,8 +134,6 @@ class LabelAnnotationList extends Component {
     return null;
   }
 }
-
-// style={{ marginLeft: "40px" }}
 
 export default LabelAnnotationList;
 

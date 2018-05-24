@@ -11,7 +11,6 @@ import ResultCardModified from './components/ResultCardModified'
 
 import {
   ReactiveBase,
-  ResultCard,
   TextField,
   ReactiveComponent
 } from '@appbaseio/reactivesearch';
@@ -26,7 +25,7 @@ class App extends Component {
       modalIsOpen: false,
       modalFields: null,
       paginationSize: 20,
-      curentPage: 1
+      currentPage: 1
     };
   }
 
@@ -38,8 +37,6 @@ class App extends Component {
     this.setState({ partialColorQuery: newQuery })
   }
 
-  //MOdal methods
-
   openModal = (modalFields) => {
     this.setState({
       modalIsOpen: true,
@@ -48,18 +45,13 @@ class App extends Component {
 
   }
 
-  afterOpenModal = () => {
-    // references are now sync'd and can be accessed.
-    //this.subtitle.style.color = '#f00';
-  }
-
   closeModal = () => {
     this.setState({ modalIsOpen: false });
   }
 
   handlePageChange = (page) => {
-    if (page !== this.state.curentPage) {
-      this.setState({ curentPage: page });
+    if (page !== this.state.currentPage) {
+      this.setState({ currentPage: page });
     }
   }
 
@@ -164,7 +156,7 @@ class App extends Component {
               defaultQuery={() => colorPickerDefaultQuery({
                 musts: this.state.partialColorQuery,
                 paginationSize: this.state.paginationSize,
-                from: (this.state.curentPage - 1) * this.state.paginationSize
+                from: (this.state.currentPage - 1) * this.state.paginationSize
               })}
 
               react={{

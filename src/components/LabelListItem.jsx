@@ -24,7 +24,6 @@ class LabelListItem extends Component {
   render() {
     const { label, count } = this.props;
     const { checked } = this.state;
-    console.log(label)
     return (
       <div className="label-list-item" style={{ "margin": "2px 0px 2px 0px", "width": "310px" }}>
         <label className="container">

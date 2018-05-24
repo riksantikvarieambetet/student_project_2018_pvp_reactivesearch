@@ -25,7 +25,6 @@ class ResultModal extends Component {
 
 
     const { description, service, image, organization, tag, context, googleVision, entityUri, itemLabel } = this.props.modalFields
-    console.log(image)
     const labels = googleVision.responses[0].labelAnnotations;
     const colors = googleVision.responses[0].imagePropertiesAnnotation.dominantColors.colors;
     let motive = image.motive;
@@ -52,7 +51,6 @@ class ResultModal extends Component {
       { label: "Place:", text: context.placeLabel ? context.placeLabel : "-" },
       { label: "Time:", text: context.timeLabel ? context.timeLabel : "-" },
       { label: "Attribution:", text: <a href={kringla} target="_blank">Kringla.nu</a> }
-
     ]
 
 
@@ -77,7 +75,7 @@ class ResultModal extends Component {
           </div>
         </div>
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <img style={{ display: "block", maxWidth: "1000px", maxHeight: "750px", width: "auto", height: "auto" }} src={highres ? highres : lowres} />
+          <img alt={motive ? motive : "-"} style={{ display: "block", maxWidth: "1000px", maxHeight: "750px", width: "auto", height: "auto" }} src={highres ? highres : lowres} />
         </div>
 
       </div>

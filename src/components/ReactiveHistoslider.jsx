@@ -4,10 +4,6 @@ import Histoslider from 'histoslider';
 
 class ReactiveHistoslider extends Component {
 
-  constructor(props) {
-    super(props);
-  }
-
   setValueRange = (newValue) => {
     if (!newValue) return;
     // this prevents the slider handles from over extending their range (overlapping).
