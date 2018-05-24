@@ -1,2 +1,0 @@
-npm run build
-sftp root@ul-aomlab01.testraa.se:/var/www/ <<< $'put -r ./build/*'
