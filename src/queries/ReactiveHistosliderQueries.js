@@ -32,7 +32,7 @@ export function reactiveHistosliderDefaultQuery(options) {
             "path": "googleVision.responses.labelAnnotations",
             "query": {
               "bool": {
-                "filter": [
+                "must": [
                   {
                     "terms": {
                       "googleVision.responses.labelAnnotations.description.keyword": options.labels
