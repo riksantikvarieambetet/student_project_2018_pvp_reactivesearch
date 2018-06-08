@@ -1,21 +1,16 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import LabelListItem from './LabelListItem'
 import ColorStrip from './ColorStrip'
 
 //TODO länka till kringla via entityUri http://www.kringla.nu/kringla/objekt?referens= + raa/kmb/16000300032372
 
 class ResultModal extends Component {
 
-  createLabelListItems = (labels) => {
+  createLabelList = (labels) => {
     return (labels.map((item, index) =>
-      <LabelListItem
-        key={index}
-        handleItemChange={(item) => console.log(item)}
-        label={item.description}
-        initialState={false}
-        count={item.score}
-      />
+      <div key={index} style={{ width: "300px" }}>
+        <span>{item.description}</span>
+        <span style={{ float: "right" }}>{item.score}</span>
+      </div>
     ));
   }
 
@@ -68,14 +63,28 @@ class ResultModal extends Component {
             })
           }
           <div style={{ padding: "5px" }}>
-            <ColorStrip key={"color"} colors={colors} colorstripWidth={100} setSelectedColors={() => { console.log('not done') }} />
+            <ColorStrip key={"color"} colors={colors} colorstripWidth={100} setSelectedColors={() => { console.log('Not implemented') }} />
           </div>
           <div style={{ overflowY: "auto", padding: "5px" }}>
-            {this.createLabelListItems(labels)}
+            <div style={{ fontWeight: "bold", width: "300px", marginBottom: "20px" }}>
+              <span>Label</span>
+              <span style={{ float: "right" }}>Confidence</span>
+            </div>
+            {this.createLabelList(labels)}
           </div>
         </div>
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <img alt={motive ? motive : "-"} style={{ display: "block", maxWidth: "1000px", maxHeight: "750px", width: "auto", height: "auto" }} src={highres ? highres : lowres} />
+          <img
+            alt={motive ? motive : "-"}
+            style={{
+              display: "block",
+              maxWidth: "1000px",
+              maxHeight: "750px",
+              width: "auto",
+              height: "auto"
+            }}
+            src={highres ? highres : lowres}
+          />
         </div>
 
       </div>
@@ -83,11 +92,5 @@ class ResultModal extends Component {
 
   }
 }
-/* 
-ResultModal.propTypes = {
-  onClose: PropTypes.func.isRequired,
-  show: PropTypes.bool,
-  children: PropTypes.node
-}; */
 
 export default ResultModal;

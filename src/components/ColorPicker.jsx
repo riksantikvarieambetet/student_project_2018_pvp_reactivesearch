@@ -100,7 +100,6 @@ class ColorPicker extends Component {
         let h = this.state.currentColorPickerColor.h
         let s = this.state.currentColorPickerColor.s
         let l = this.state.currentColorPickerColor.l
-
         this.setSelectedColors(h, s * 100, l * 100);
     }
 

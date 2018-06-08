@@ -96,8 +96,8 @@ class App extends Component {
               style={{ "padding": "10px", margin: "42px 0px 0px 30px", width: "300px" }}
               dataField=""
               showFilter={true}
-              URLParams={true}
               customQuery={textFieldQuery}
+              placeholder="search"
             />
 
             <ReactiveComponent

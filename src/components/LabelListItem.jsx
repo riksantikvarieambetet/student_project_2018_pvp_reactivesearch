@@ -20,7 +20,7 @@ class LabelListItem extends Component {
     handleItemChange(label);
   }
 
-  // TODO this style needs a workover its both inline and App.css
+  // TODO this style needs amending its both inline and App.css
   render() {
     const { label, count } = this.props;
     const { checked } = this.state;
@@ -41,13 +41,5 @@ class LabelListItem extends Component {
     );
   }
 }
-/* 
-
-<label class="container">One
-  <input type="checkbox" checked="checked">
-    <span class="checkmark"></span>
-</label> 
-
-*/
 
 export default LabelListItem;

@@ -1,6 +1,6 @@
 # Content based imagesearch student project
 
-This is a prototype commissioned by Riksantikvarieämbetet (RAÄ) in Visby. The prototype's purpose is to show the potential strengths or weaknesses of adding machine extracted attributes to images made available through RAÄ's API. The Google Vision service was used in conjunction with the RAÄ K-Samsök API to merge image information. The result is presented via a React web application that allows a user to search images by combining labels as well as combinations of colors.
+This is a prototype commissioned by Riksantikvarieämbetet (RAÄ) in Visby. The prototype's purpose is to show the potential strengths or weaknesses of adding machine extracted attributes to images made available through RAÄ's API. The Google Vision service was used in conjunction with the RAÄ K-Samsök API to merge image information of 1000 photos. The result is presented via a React web application that allows a user to search images by combining labels as well as combinations of colors.
 
 ## Getting Started
 
@@ -24,17 +24,17 @@ npm install
 
 ### Add data to Elasticsearch database.
 
-First, run mapping included in './ElasticsearchConfigs/elasticsearchMappings.txt'-file:
+First, add mapping included in './ElasticsearchConfigs/elasticsearchMappings.txt'-file:
 ```
 curl -XPUT 'localhost:9200/test_data?pretty' -H 'Content-Type: application/json' -d <Content of elasticsearchMappings>
 ```
 
-Then add testdata from './ElasticsearchConfigs/test_data.json'-file:
+Then add test data from './ElasticsearchConfigs/test_data.json'-file:
 ```
 curl -XPOST 'localhost:9200/test_data/googleVision/_bulk?pretty' --data-binary "@/path-to-test-data-file/test_data.json" -H 'Content-Type: application/json'
 ```
 
-The default Elasticsearch-server is set to 'localhost:9200' and indice 'test_data'. If this need to be changed, edit props for ReactiveBase-component in './src/App.js'
+The default Elasticsearch-server is set to 'localhost:9200' and indice 'test_data'. If a change is needed, edit props for ReactiveBase-component in './src/App.js'
 
 
 

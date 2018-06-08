@@ -21,6 +21,18 @@ export function textFieldQuery(value) {
                   "type": "most_fields",
                   "fuzziness": "AUTO"
                 }
+              },
+              {
+                "nested": {
+                  "path": "googleVision.responses.labelAnnotations",
+                  "query": {
+                    "bool": {
+                      "must": [
+                        { "term": { "googleVision.responses.labelAnnotations.description.keyword": value } }
+                      ]
+                    }
+                  }
+                }
               }
             ]
           }

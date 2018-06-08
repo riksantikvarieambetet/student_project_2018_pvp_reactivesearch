@@ -21,13 +21,31 @@ class ReactiveHistoslider extends Component {
     let histosliderData = [];
     let mappedHistosliderData = [];
     if (this.props.aggregations) {
+      // The query returns a inner score due to filtering based on selected labels 
+      // that are not present if no labels are selected.
+      // In other words the structure of the aggregate depends on the query (ReactiveHistosliderQueries default query).
       histosliderData = this.props.aggregations.labelAnnotations.inner ?
         this.props.aggregations.labelAnnotations.inner.score.buckets
         : this.props.aggregations.labelAnnotations.score.buckets;
 
+
+
       mappedHistosliderData = histosliderData.map((item) => {
         return ({ x0: item.key, x: item.key + 5, y: item.doc_count })
       })
+
+      let test = 0;
+      mappedHistosliderData.forEach(element => {
+        test += element.y;
+        console.log(element.y)
+      });
+
+      // console.log(test + " detta är teste")
+      if (test === 0) {
+        console.log("return")
+        return null;
+      }
+
       return (
         <div
           onMouseUp={this.props.updateQuery}
