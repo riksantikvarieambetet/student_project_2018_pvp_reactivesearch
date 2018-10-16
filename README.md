@@ -1,6 +1,9 @@
-# Content based imagesearch student project
+# Content based image search student project
 
 This is a prototype commissioned by Riksantikvarieämbetet (RAÄ) in Visby. The prototype's purpose is to show the potential strengths or weaknesses of adding machine extracted labels to images made available through the SOCH/K-samsök API. The Google Vision service was used in conjunction with the RAÄ K-Samsök API to merge image information of 1000 photos. The result is presented via a React web application that allows a user to search images by combining labels as well as combinations of colors.
+
+The design and development of the prototyp and an analysis of the precision of the machine extracted labels have been summarised in Max Collin's and Alfred Bjersander's student paper "[Innehållsbaserad bildsök - Förbättrad informationskvalitet för det fotografiska
+kulturarvet](https://github.com/riksantikvarieambetet/student_project_2018_pvp_reactivesearch/blob/master/Inneh%C3%A5llsbaserad_bilds%C3%B6k_2018_05_31.pdf)" at Uppsala University.
 
 ## Getting Started
 
