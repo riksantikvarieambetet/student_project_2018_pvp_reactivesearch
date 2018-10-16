@@ -1,6 +1,6 @@
 # Content based imagesearch student project
 
-This is a prototype commissioned by Riksantikvarieämbetet (RAÄ) in Visby. The prototype's purpose is to show the potential strengths or weaknesses of adding machine extracted attributes to images made available through RAÄ's API. The Google Vision service was used in conjunction with the RAÄ K-Samsök API to merge image information of 1000 photos. The result is presented via a React web application that allows a user to search images by combining labels as well as combinations of colors.
+This is a prototype commissioned by Riksantikvarieämbetet (RAÄ) in Visby. The prototype's purpose is to show the potential strengths or weaknesses of adding machine extracted labels to images made available through the SOCH/K-samsök API. The Google Vision service was used in conjunction with the RAÄ K-Samsök API to merge image information of 1000 photos. The result is presented via a React web application that allows a user to search images by combining labels as well as combinations of colors.
 
 ## Getting Started
 
